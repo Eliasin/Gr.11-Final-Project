@@ -11,8 +11,8 @@ namespace Rendering {
         pos = newPos;
     }
 
-    sf::Vector2<int> Camera::translate(Game::Vector gameCoords) {
-        return sf::Vector2<int>(gameCoords.x - pos.x, gameCoords.y - pos.y);
+    sf::Vector2<float> Camera::translate(Game::Vector gameCoords) {
+        return sf::Vector2<float>(gameCoords.x - pos.x, gameCoords.y - pos.y);
     }
 
 }

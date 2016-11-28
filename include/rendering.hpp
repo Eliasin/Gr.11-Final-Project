@@ -8,6 +8,6 @@ namespace Rendering {
     public:
         void move(Game::Vector moveBy);
         void setPos(Game::Vector newPos);
-        sf::Vector2<int> translate(Game::Vector gameCoords);
+        sf::Vector2<float> translate(Game::Vector gameCoords);
     };
 }
