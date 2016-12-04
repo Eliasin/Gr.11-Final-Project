@@ -298,11 +298,12 @@ namespace Game {
         }
     }
 
-    Entity::Entity(const EntityTemplate& entityTemplate, unsigned int id_) {
+    Entity::Entity(const EntityTemplate& entityTemplate, unsigned int id_, Map* owner) {
         id = id_;
         hitbox = entityTemplate.hitbox;
         baseStats = entityTemplate.stats;
         behaviourProfile = entityTemplate.behaviourProfile;
+        ownerMap = owner;
     }
 
     const unsigned int Entity::getID() {
@@ -318,8 +319,10 @@ namespace Game {
     }
 
     void Entity::move(Vector move_by) {
+        if (ownerMap->spaceEmpty(hitbox)) {
         hitbox.topLeft.x += move_by.x;
         hitbox.topLeft.y += move_by.y;
+        }
     }
 
     void Entity::addBuff(const Buff& buff) {
@@ -369,7 +372,7 @@ namespace Game {
     }
 
     void Map::createEntity(const EntityTemplate& entityTemplate) {
-        entities.push_back(new Entity(entityTemplate, currentMaxID));
+        entities.push_back(new Entity(entityTemplate, currentMaxID, this));
         currentMaxID += 1;
     }
 

@@ -166,7 +166,8 @@ namespace Game {
         std::vector<Buff> buffs;
         EntityStats baseStats;
         BehaviourProfile* behaviourProfile;
-        Entity(const EntityTemplate& entityTemplate, unsigned int id_);
+        Map* ownerMap;
+        Entity(const EntityTemplate& entityTemplate, unsigned int id_, Map* owner);
     public:
         const unsigned int getID();
         const Rect getHitbox();
