@@ -30,16 +30,22 @@ namespace IO {
         camera->move(moveBy);
     }
 
-    EntityMovementKeyHandler::PlayerMovementKeyHandler(const std::vector<sf::Keyboard::Key>& triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_) {
+    EntityMovementKeyHandler::EntityMovementKeyHandler(const std::vector<sf::Keyboard::Key>& triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_) {
         triggerOn = triggerOn_;
         moveBy = moveBy_;
         entity = entity_;
     }
 
-    EntityMovementKeyHandler::PlayerMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_) {
+    EntityMovementKeyHandler::EntityMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_) {
         triggerOn.push_back(triggerOn_);
         moveBy = moveBy_;
         entity = entity_;
+    }
+
+    EntityMovementKeyHandler::EntityMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_) {
+        triggerOn.push_back(triggerOn_);
+        moveBy = moveBy_;
+        entity = NULL;
     }
 
     void EntityMovementKeyHandler::checkForKeyPress(const sf::Keyboard& keyboard) {
@@ -52,6 +58,14 @@ namespace IO {
 
     void EntityMovementKeyHandler::onKeyPress() {
         entity->move(moveBy);
+    }
+
+    Game::Entity* EntityMovementKeyHandler::getHandledEntity() {
+        return entity;
+    }
+
+    void EntityMovementKeyHandler::setHandledEntity(Game::Entity* entity_) {
+        entity = entity_;
     }
 
 }

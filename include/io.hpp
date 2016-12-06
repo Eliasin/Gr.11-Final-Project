@@ -34,10 +34,13 @@ namespace IO {
         Game::Vector moveBy;
         Game::Entity* entity;
     public:
-        PlayerMovementKeyHandler(const std::vector<sf::Keyboard::Key>& triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_);
-        PlayerMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_);
+        EntityMovementKeyHandler(const std::vector<sf::Keyboard::Key>& triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_);
+        EntityMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_);
+        EntityMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_);
         virtual void checkForKeyPress(const sf::Keyboard& keyboard) override;
         virtual void onKeyPress() override;
+        Game::Entity* getHandledEntity();
+        void setHandledEntity(Game::Entity* entity_);
     };
 
 }
