@@ -386,4 +386,8 @@ namespace Game {
         return empty;
     }
 
+    const std::vector<Entity*>& Map::getEntities() {
+        return entities;
+    }
+
 }

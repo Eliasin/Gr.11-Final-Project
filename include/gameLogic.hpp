@@ -157,6 +157,7 @@ namespace Game {
         void tickAndApplyActions();
         void createEntity(const EntityTemplate& entityTemplate);
         bool spaceEmpty(const Rect& space);
+        const std::vector<Entity*>& getEntities();
     };
 
     class Entity {
