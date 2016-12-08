@@ -21,12 +21,12 @@ namespace IO {
     void CameraKeyHandler::checkForKeyPress(const sf::Keyboard& keyboard) {
         for (std::vector<sf::Keyboard::Key>::iterator currentKey = triggerOn.begin(); currentKey!= triggerOn.end(); currentKey++) {
             if (keyboard.isKeyPressed(*currentKey)) {
-                onKeyPress();
+                onKeyPress(*currentKey);
             }
         }
     }
 
-    void CameraKeyHandler::onKeyPress() {
+    void CameraKeyHandler::onKeyPress(sf::Keyboard::Key pressed) {
         camera->move(moveBy);
     }
 
@@ -51,12 +51,12 @@ namespace IO {
     void EntityMovementKeyHandler::checkForKeyPress(const sf::Keyboard& keyboard) {
         for (std::vector<sf::Keyboard::Key>::iterator currentKey = triggerOn.begin(); currentKey!= triggerOn.end(); currentKey++) {
             if (keyboard.isKeyPressed(*currentKey)) {
-                onKeyPress();
+                onKeyPress(*currentKey);
             }
         }
     }
 
-    void EntityMovementKeyHandler::onKeyPress() {
+    void EntityMovementKeyHandler::onKeyPress(sf::Keyboard::Key pressed) {
         entity->move(moveBy);
     }
 

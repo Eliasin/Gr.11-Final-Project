@@ -8,7 +8,7 @@
 namespace IO {
     class KeyHandler {
     protected:
-        virtual void onKeyPress()=0;
+        virtual void onKeyPress(sf::Keyboard::Key pressed)=0;
     public:
         virtual void checkForKeyPress(const sf::Keyboard& keyboard)=0;
     };
@@ -21,7 +21,7 @@ namespace IO {
         CameraKeyHandler(const std::vector<sf::Keyboard::Key>& triggerOn_, const Game::Vector& moveBy_, Rendering::Camera* camera_);
         CameraKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_, Rendering::Camera* camera_);
         virtual void checkForKeyPress(const sf::Keyboard& keyboard) override;
-        virtual void onKeyPress() override;
+        virtual void onKeyPress(sf::Keyboard::Key pressed) override;
     };
 
     class GameKeyHandler : public KeyHandler {
@@ -38,7 +38,7 @@ namespace IO {
         EntityMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_);
         EntityMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_);
         virtual void checkForKeyPress(const sf::Keyboard& keyboard) override;
-        virtual void onKeyPress() override;
+        virtual void onKeyPress(sf::Keyboard::Key pressed) override;
         Game::Entity* getHandledEntity();
         void setHandledEntity(Game::Entity* entity_);
     };
