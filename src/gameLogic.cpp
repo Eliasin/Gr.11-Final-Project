@@ -357,6 +357,15 @@ namespace Game {
         std::vector<Action*> actions = std::vector<Action*>();
     }
 
+    Map::~Map() {
+        for (Entity* currentEntity : entities) {
+            free(currentEntity);
+        }
+        for (Action* currentAction : actions) {
+            free(currentAction);
+        }
+    }
+
     void Map::tickAndApplyActions() {
         for (std::vector<Action*>::iterator currentAction = actions.begin(); currentAction != actions.end(); currentAction++) {
             if ((*currentAction)->getFrameWait() != 0) {
