@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #include "gameLogic.hpp"
 #include "rendering.hpp"
 #include <SFML/Main.hpp>
@@ -29,14 +30,12 @@ namespace IO {
         Game::Map* map;
     };
 
-    class EntityMovementKeyHandler : public GameKeyHandler {
-        std::vector<sf::Keyboard::Key> triggerOn;
-        Game::Vector moveBy;
+    class EntityEventKeyHandler : public GameKeyHandler {
+        std::map<sf::Keyboard::Key, void (*)(Game::Entity*)> keyEventMap;
         Game::Entity* entity;
     public:
-        EntityMovementKeyHandler(const std::vector<sf::Keyboard::Key>& triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_);
-        EntityMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_);
-        EntityMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_);
+        EntityEventKeyHandler(const std::map<sf::Keyboard::Key, void (*)(Game::Entity*)>& keyEventMap_, Game::Entity* entity_);
+        EntityEventKeyHandler(const std::map<sf::Keyboard::Key, void (*)(Game::Entity*)>& keyEventMap_);
         virtual void checkForKeyPress(const sf::Keyboard& keyboard) override;
         virtual void onKeyPress(sf::Keyboard::Key pressed) override;
         Game::Entity* getHandledEntity();

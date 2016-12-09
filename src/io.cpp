@@ -30,41 +30,33 @@ namespace IO {
         camera->move(moveBy);
     }
 
-    EntityMovementKeyHandler::EntityMovementKeyHandler(const std::vector<sf::Keyboard::Key>& triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_) {
-        triggerOn = triggerOn_;
-        moveBy = moveBy_;
+    EntityEventKeyHandler::EntityEventKeyHandler(const std::map<sf::Keyboard::Key, void (*)(Game::Entity*)>& keyEventMap_, Game::Entity* entity_) {
+        keyEventMap = keyEventMap_;
         entity = entity_;
     }
 
-    EntityMovementKeyHandler::EntityMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_, Game::Entity* entity_) {
-        triggerOn.push_back(triggerOn_);
-        moveBy = moveBy_;
-        entity = entity_;
-    }
-
-    EntityMovementKeyHandler::EntityMovementKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_) {
-        triggerOn.push_back(triggerOn_);
-        moveBy = moveBy_;
+    EntityEventKeyHandler::EntityEventKeyHandler(const std::map<sf::Keyboard::Key, void (*)(Game::Entity*)>& keyEventMap_) {
+        keyEventMap = keyEventMap_;
         entity = NULL;
     }
 
-    void EntityMovementKeyHandler::checkForKeyPress(const sf::Keyboard& keyboard) {
-        for (std::vector<sf::Keyboard::Key>::iterator currentKey = triggerOn.begin(); currentKey!= triggerOn.end(); currentKey++) {
-            if (keyboard.isKeyPressed(*currentKey)) {
-                onKeyPress(*currentKey);
+    void EntityEventKeyHandler::checkForKeyPress(const sf::Keyboard& keyboard) {
+        for (std::map<sf::Keyboard::Key, void (*)(Game::Entity*)>::iterator currentKey = keyEventMap.begin(); currentKey!= keyEventMap.end(); currentKey++) {
+            if (keyboard.isKeyPressed(currentKey->first)) {
+                onKeyPress(currentKey->first);
             }
         }
     }
 
-    void EntityMovementKeyHandler::onKeyPress(sf::Keyboard::Key pressed) {
-        entity->move(moveBy);
+    void EntityEventKeyHandler::onKeyPress(sf::Keyboard::Key pressed) {
+        keyEventMap[pressed](entity);
     }
 
-    Game::Entity* EntityMovementKeyHandler::getHandledEntity() {
+    Game::Entity* EntityEventKeyHandler::getHandledEntity() {
         return entity;
     }
 
-    void EntityMovementKeyHandler::setHandledEntity(Game::Entity* entity_) {
+    void EntityEventKeyHandler::setHandledEntity(Game::Entity* entity_) {
         entity = entity_;
     }
 
