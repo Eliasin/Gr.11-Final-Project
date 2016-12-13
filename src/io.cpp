@@ -18,9 +18,9 @@ namespace IO {
         camera = camera_;
     }
 
-    void CameraKeyHandler::checkForKeyPress(const sf::Keyboard& keyboard) {
+    void CameraKeyHandler::checkForKeyPress() {
         for (std::vector<sf::Keyboard::Key>::iterator currentKey = triggerOn.begin(); currentKey!= triggerOn.end(); currentKey++) {
-            if (keyboard.isKeyPressed(*currentKey)) {
+            if (sf::Keyboard::isKeyPressed(*currentKey)) {
                 onKeyPress(*currentKey);
             }
         }
@@ -40,9 +40,9 @@ namespace IO {
         entity = NULL;
     }
 
-    void EntityEventKeyHandler::checkForKeyPress(const sf::Keyboard& keyboard) {
+    void EntityEventKeyHandler::checkForKeyPress() {
         for (std::map<sf::Keyboard::Key, void (*)(Game::Entity*)>::iterator currentKey = keyEventMap.begin(); currentKey!= keyEventMap.end(); currentKey++) {
-            if (keyboard.isKeyPressed(currentKey->first)) {
+            if (sf::Keyboard::isKeyPressed(currentKey->first)) {
                 onKeyPress(currentKey->first);
             }
         }
