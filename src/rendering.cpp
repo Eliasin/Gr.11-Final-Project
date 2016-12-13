@@ -4,6 +4,8 @@
 
 namespace Rendering {
 
+    const std::vector<std::string> RenderProfile::stateTextureNames = { "idle", "hurt" };
+
     void Camera::move(const Game::Vector& moveBy) {
         viewBox.topLeft.x += moveBy.x;
         viewBox.topLeft.y += moveBy.y;

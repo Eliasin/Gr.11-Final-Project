@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 namespace Rendering {
+
     class Camera {
         Game::Rect viewBox;
     public:
@@ -14,6 +15,17 @@ namespace Rendering {
         void centerOn(const Game::Vector& centeringOn, const sf::Window& window);
         sf::Vector2<float> translate(const Game::Vector& gameCoords);
         sf::Vector2<float> scaleSpriteToMatcHitbox(const sf::Sprite& sprite, const sf::Window& window, const Game::Rect& hitbox);
+    };
+
+    class RenderProfile {
+        sf::Sprite sprite;
+        std::map<std::string, std::vector<sf::Texture>>* textureSet;
+        Game::Entity* watchingEntity;
+        Rendering::Camera* camera;
+    public:
+        static const std::vector<std::string> stateTextureNames;
+        RenderProfile(Game::Entity* watchingEntity_, Rendering::Camera* camera);
+        void updateEntitySprite();
     };
 
     sf::Vector2<float> scaleSpriteRelativeToWindow(const sf::Sprite& sprite, const sf::Window& window, const sf::Vector2<float>& size);
