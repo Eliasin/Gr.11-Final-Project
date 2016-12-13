@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <map>
 #include <memory>
 
 namespace Game {
@@ -153,6 +154,7 @@ namespace Game {
         std::vector<Action*> actions;
     public:
         Map();
+        ~Map();
         void addActionToQueue(Action* action);
         void tickAndApplyActions();
         void createEntity(const EntityTemplate& entityTemplate);
@@ -179,4 +181,21 @@ namespace Game {
         void setStats(const EntityStats& stats);
         EntityStats getFinalStats();
     };
+
+    class Director {
+        unsigned int pointPool;
+        Map* handling;
+        std::map<EntityTemplate, unsigned int> spawnablesValues;
+        std::vector<Rect> spawnArea;
+    public:
+        Director(Map* handling_);
+        void addSpawnableEntity(const EntityTemplate& entity);
+        void addSpawnArea(const Rect& area);
+        void setPointPool(unsigned int pointPool_);
+        unsigned int getPointPool();
+        void setHandlingMap(Map* handling_);
+        Map* getHandlingMap();
+        const std::map<EntityTemplate, unsigned int> getSpawnableValuesMap();
+    };
+
 }
