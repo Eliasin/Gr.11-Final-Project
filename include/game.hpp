@@ -5,21 +5,26 @@
 #include "gameLogic.hpp"
 #include "rendering.hpp"
 #include "io.hpp"
-#include <SFML/Main.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
 
 namespace Main {
 
-    class Game {
+    class GameInstance {
         Game::Map map;
         sf::RenderWindow window;
-        std::vector<sf::Texture> textures;
-        std::vector<sf::Sprites> sprites;
+        std::map<std::string, std::map<std::string, sf::Texture>> textureSets;
+        std::map<std::string, Rendering::RenderProfile> renderProfiles;
         Rendering::Camera camera;
-        sf::Keyboard keyboard;
-        std::vector<KeyHandler*> keyHandlers;
+        std::vector<IO::KeyHandler*> keyHandlers;
+
+        void loadTextureSetFromPath(std::string setPath, std::string name);
+
+        void initializeRenderingAndWindow();
+        void initializeTextures();
+        void initializeIO();
+        void initializeGameLogic();
+
+        void initializeGame();
+        void tickGame();
     public:
         void run();
     };
