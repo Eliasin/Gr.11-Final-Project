@@ -12,7 +12,7 @@ namespace Main {
         Game::Map map;
         sf::RenderWindow window;
         std::map<std::string, std::map<std::string, sf::Texture>> textureSets;
-        std::map<std::string, Rendering::RenderProfile> renderProfiles;
+        std::map<std::string, Rendering::EntityRenderer> EntityRenderers;
         Rendering::Camera camera;
         std::vector<IO::KeyHandler*> keyHandlers;
 

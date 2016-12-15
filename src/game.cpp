@@ -9,7 +9,7 @@ namespace Main {
 
     void GameInstance::loadTextureSetFromPath(std::string setPath, std::string name) {
         std::map<std::string, sf::Texture> textureSet;
-        for (std::string currentState : Rendering::RenderProfile::stateTextureNames) {
+        for (std::string currentState : Rendering::EntityRenderer::stateTextureNames) {
             sf::Texture texture;
             std::cout << setPath + "/" + currentState + ".png" << std::endl;
             if (!texture.loadFromFile(setPath + "/"  + currentState + ".png")) {
