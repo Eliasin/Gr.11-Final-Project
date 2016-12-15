@@ -4,8 +4,6 @@
 
 namespace Rendering {
 
-    const std::vector<std::string> RenderProfile::stateTextureNames = { "idle", "hurt" };
-
     void Camera::move(const Game::Vector& moveBy) {
         viewBox.topLeft.x += moveBy.x;
         viewBox.topLeft.y += moveBy.y;
@@ -39,6 +37,37 @@ namespace Rendering {
     sf::Vector2<float> scaleSpriteRelativeToWindow(const sf::Sprite& sprite, const sf::Window& window, const sf::Vector2<float>& size) {
         const sf::Texture* spriteTexture = sprite.getTexture();
         return sf::Vector2<float>(window.getSize().x * size.x / spriteTexture->getSize().x, window.getSize().y * size.y / spriteTexture->getSize().y);
+    }
+
+    const std::vector<std::string> EntityRenderer::stateTextureNames = { "idle", "hurt" };
+
+    EntityRenderer::EntityRenderer(Game::Entity* watchingEntity_, Rendering::Camera* camera_) {
+        watchingEntity = watchingEntity_;
+        camera = camera_;
+    }
+
+    void EntityRenderer::updateEntitySprite() {
+
+    }
+
+    void EntityRenderer::setWatchingEntity(Game::Entity* entity) {
+        watchingEntity = entity;
+    }
+
+    void EntityRenderer::setCamera(Camera* camera_) {
+        camera = camera_;
+    }
+
+    Game::Entity* EntityRenderer::getWatchingEntity() {
+        return watchingEntity;
+    }
+
+    Camera* EntityRenderer::getCamera() {
+        return camera;
+    }
+
+    const sf::Sprite& EntityRenderer::getSprite() {
+        return sprite;
     }
 
 }
