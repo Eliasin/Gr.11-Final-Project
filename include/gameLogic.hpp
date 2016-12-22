@@ -51,6 +51,7 @@ namespace Game {
     class BehaviourProfile {
     public:
         BehaviourProfile();
+        bool isHitting();
     };
 
     class Buff {
@@ -157,6 +158,7 @@ namespace Game {
         ~Map();
         void addActionToQueue(Action* action);
         void tickAndApplyActions();
+        Entity* getEntityWithID(unsigned int ID);
         void createEntity(const EntityTemplate& entityTemplate);
         bool spaceEmpty(const Rect& space);
         const std::vector<Entity*>& getEntities();
@@ -172,6 +174,7 @@ namespace Game {
         Map* ownerMap;
         Entity(const EntityTemplate& entityTemplate, unsigned int id_, Map* owner);
     public:
+        Entity(const Entity& entity);
         const unsigned int getID();
         const Rect getHitbox();
         void setHitbox(Rect new_hitbox);
@@ -180,6 +183,7 @@ namespace Game {
         const EntityStats& getBaseStats();
         void setStats(const EntityStats& stats);
         EntityStats getFinalStats();
+        EntityTemplate getState();
     };
 
     class Director {
