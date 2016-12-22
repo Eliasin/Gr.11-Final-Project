@@ -347,6 +347,13 @@ namespace Game {
         return tempStats;
     }
 
+    EntityTemplate Entity::getState() {
+        EntityTemplate returnTemplate;
+        returnTemplate.stats = baseStats;
+        returnTemplate.hitbox = hitbox;
+        returnTemplate.behaviourProfile = behaviourProfile;
+    }
+
     void Map::addActionToQueue(Action* action) {
         actions.push_back(action);
     }
@@ -378,6 +385,15 @@ namespace Game {
             }
         }
 
+    }
+
+    Entity* Map::getEntityWithID(unsigned int ID) {
+        for (Entity* currentEntity : entities) {
+            if (currentEntity->getID() == ID) {
+                return currentEntity;
+            }
+        }
+        return NULL;
     }
 
     void Map::createEntity(const EntityTemplate& entityTemplate) {
