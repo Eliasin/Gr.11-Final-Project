@@ -25,6 +25,12 @@ namespace Main {
 
         void initializeGame();
         void tickGame();
+
+        void tickIO();
+
+        void tickGameLogic();
+
+        void tickRendering();
     public:
         void run();
     };
