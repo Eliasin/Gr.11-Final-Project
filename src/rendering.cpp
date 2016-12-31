@@ -68,7 +68,7 @@ namespace Rendering {
     }
 
     void EntityEventParser::updateCurrentState() {
-        if (!map->getEntityWithID(entityID)) {
+        if (entityValid()) {
             Game::EntityStats currentEntityState = map->getEntityWithID(entityID)->getState().stats;
 
             if (lastState.stats.health > currentEntityState.health) {
@@ -81,9 +81,16 @@ namespace Rendering {
     }
 
     void EntityEventParser::grabEntityState() {
-        if (map->getEntityWithID(entityID)) {
+        if (entityValid()) {
             lastState = map->getEntityWithID(entityID)->getState();
         }
+    }
+
+    bool EntityEventParser::entityValid() {
+        if (map->getEntityWithID(entityID)) {
+            return true;
+        }
+        return false;
     }
 
     EntityEventParser::STATE EntityEventParser::getEntityState() {
@@ -132,8 +139,10 @@ namespace Rendering {
     }
 
     void EntityRenderer::updateEntitySprite() {
-        positionSprite();
-        updateSpriteTexture();
+        if (entityEventParser.entityValid()) {
+            positionSprite();
+            updateSpriteTexture();
+        }
     }
 
     void EntityRenderer::setCamera(Camera* camera_) {

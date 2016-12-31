@@ -34,6 +34,7 @@ namespace Rendering {
         EntityEventParser();
         void updateCurrentState();
         void grabEntityState();
+        bool entityValid();
         STATE getEntityState();
         Game::Rect getEntityHitbox();
         unsigned int getEntityID();
