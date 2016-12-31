@@ -39,27 +39,109 @@ namespace Rendering {
         return sf::Vector2<float>(window.getSize().x * size.x / spriteTexture->getSize().x, window.getSize().y * size.y / spriteTexture->getSize().y);
     }
 
-    const std::vector<std::string> EntityRenderer::stateTextureNames = { "idle", "hurt" };
+    EntityEventParser::EntityEventParser(Game::Map* map_, unsigned int entityID_) {
+        map = map_;
+        entityID = entityID_;
+        lastState = map_->getEntityWithID(entityID_)->getState();
+        currentState = STATE::IDLE;
+    }
 
-    EntityRenderer::EntityRenderer(Game::Entity* watchingEntity_, Rendering::Camera* camera_) {
-        watchingEntity = watchingEntity_;
+    EntityEventParser::EntityEventParser(const EntityEventParser& copying) {
+        map = copying.map;
+        entityID = copying.entityID;
+        lastState = copying.lastState;
+        currentState = STATE::IDLE;
+    }
+
+    EntityEventParser::EntityEventParser() {
+        map = NULL;
+        entityID = 0;
+        currentState = STATE::IDLE;
+    }
+
+    unsigned int EntityEventParser::getEntityID() {
+        return entityID;
+    }
+
+    void EntityEventParser::setEntityID(unsigned int newID) {
+        entityID = newID;
+    }
+
+    void EntityEventParser::updateCurrentState() {
+        if (!map->getEntityWithID(entityID)) {
+            Game::EntityStats currentEntityState = map->getEntityWithID(entityID)->getState().stats;
+
+            if (lastState.stats.health > currentEntityState.health) {
+                currentState = EntityEventParser::STATE::HIT;
+            }
+            else {
+                currentState = EntityEventParser::STATE::IDLE;
+            }
+        }
+    }
+
+    void EntityEventParser::grabEntityState() {
+        if (map->getEntityWithID(entityID)) {
+            lastState = map->getEntityWithID(entityID)->getState();
+        }
+    }
+
+    EntityEventParser::STATE EntityEventParser::getEntityState() {
+        grabEntityState();
+        updateCurrentState();
+        return currentState;
+    }
+
+    Game::Rect EntityEventParser::getEntityHitbox() {
+        return map->getEntityWithID(entityID)->getHitbox();
+    }
+
+    const std::vector<std::string> EntityRenderer::stateTextureNames = { "idle", "hit" };
+
+    const std::map <EntityEventParser::STATE, std::string> EntityRenderer::stateToTextureName = { {EntityEventParser::STATE::HIT, "hit"}, {EntityEventParser::STATE::IDLE, "idle"} };
+
+    void EntityRenderer::initializeSprite() {
+        sprite.setTexture((*textureSet)["idle"]);
+    }
+
+    EntityRenderer::EntityRenderer(const EntityEventParser& entityEventParser_, Rendering::Camera* camera_, sf::Window* window_, std::map<std::string, sf::Texture>* textureSet_) {
+        entityEventParser = entityEventParser_;
         camera = camera_;
+        textureSet = textureSet_;
+        window = window_;
+        lastState = EntityEventParser::STATE::IDLE;
+        scaleSprite();
+    }
+
+    void EntityRenderer::scaleSprite() {
+        sf::Vector2<float> newScale = camera->scaleSpriteToMatcHitbox(sprite, *window, entityEventParser.getEntityHitbox());
+        sprite.setScale(newScale);
+    }
+
+    void EntityRenderer::positionSprite() {
+        sf::Vector2<float> position = camera->translate(entityEventParser.getEntityHitbox().topLeft);
+        sprite.setPosition(position);
+    }
+
+    void EntityRenderer::updateSpriteTexture() {
+        EntityEventParser::STATE entityState = entityEventParser.getEntityState();
+        if (lastState != entityState) {
+            std::string textureName = stateToTextureName.find(entityState)->second;
+            sprite.setTexture(textureSet->find(textureName)->second);
+        }
     }
 
     void EntityRenderer::updateEntitySprite() {
-
-    }
-
-    void EntityRenderer::setWatchingEntity(Game::Entity* entity) {
-        watchingEntity = entity;
+        positionSprite();
+        updateSpriteTexture();
     }
 
     void EntityRenderer::setCamera(Camera* camera_) {
         camera = camera_;
     }
 
-    Game::Entity* EntityRenderer::getWatchingEntity() {
-        return watchingEntity;
+    const EntityEventParser& EntityRenderer::getEntityEventParser() {
+        return entityEventParser;
     }
 
     Camera* EntityRenderer::getCamera() {

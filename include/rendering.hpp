@@ -17,18 +17,49 @@ namespace Rendering {
         sf::Vector2<float> scaleSpriteToMatcHitbox(const sf::Sprite& sprite, const sf::Window& window, const Game::Rect& hitbox);
     };
 
+    class EntityEventParser {
+    public:
+        enum class STATE {
+            HIT,
+            IDLE
+        };
+    private:
+        unsigned int entityID;
+        Game::Map* map;
+        Game::EntityTemplate lastState;
+        STATE currentState;
+    public:
+        EntityEventParser(Game::Map* map_, unsigned int entityID_);
+        EntityEventParser(const EntityEventParser& copying);
+        EntityEventParser();
+        void updateCurrentState();
+        void grabEntityState();
+        STATE getEntityState();
+        Game::Rect getEntityHitbox();
+        unsigned int getEntityID();
+        void setEntityID(unsigned int newID);
+    };
+
     class EntityRenderer {
+        static const std::map<EntityEventParser::STATE, std::string> stateToTextureName;
         sf::Sprite sprite;
-        std::map<std::string, std::vector<sf::Texture>>* textureSet;
-        Game::Entity* watchingEntity;
+        std::map<std::string, sf::Texture>* textureSet;
+        EntityEventParser entityEventParser;
         Camera* camera;
+        sf::Window* window;
+        EntityEventParser::STATE lastState;
+
+        void scaleSprite();
+        void positionSprite();
+        void updateSpriteTexture();
+
+        void initializeSprite();
     public:
         static const std::vector<std::string> stateTextureNames;
-        EntityRenderer(Game::Entity* watchingEntity_, Rendering::Camera* camera_);
+        EntityRenderer(const EntityEventParser& entityEventParser_, Rendering::Camera* camera_, sf::Window* window, std::map<std::string, sf::Texture >* textureSet_);
         void updateEntitySprite();
-        void setWatchingEntity(Game::Entity* entity);
         void setCamera(Camera* camera_);
-        Game::Entity* getWatchingEntity();
+        const EntityEventParser& getEntityEventParser();
         Camera* getCamera();
         const sf::Sprite& getSprite();
     };
