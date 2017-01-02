@@ -86,7 +86,7 @@ namespace Rendering {
         }
     }
 
-    bool EntityEventParser::entityValid() {
+    bool EntityEventParser::entityValid() const {
         if (map->getEntityWithID(entityID)) {
             return true;
         }
