@@ -88,6 +88,7 @@ namespace Game {
 
     struct EntityTemplate {
         EntityTemplate();
+        EntityTemplate(const EntityStats& stats_, const Rect& hitbox_, BehaviourProfile* behaviourProfile_);
         EntityTemplate(const EntityTemplate& copying);
         EntityStats stats;
         Rect hitbox;

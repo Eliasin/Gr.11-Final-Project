@@ -217,6 +217,12 @@ namespace Game {
         hitbox = Rect();
     }
 
+    EntityTemplate::EntityTemplate(const EntityStats& stats_, const Rect& hitbox_, BehaviourProfile* behaviourProfile_) {
+        stats = stats_;
+        hitbox = hitbox_;
+        behaviourProfile = behaviourProfile_;
+    }
+
     EntityTemplate::EntityTemplate(const EntityTemplate& copying) {
         stats = copying.stats;
         hitbox = copying.hitbox;
