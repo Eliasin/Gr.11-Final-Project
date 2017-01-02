@@ -161,6 +161,7 @@ namespace Game {
         void tickAndApplyActions();
         Entity* getEntityWithID(unsigned int ID);
         void createEntity(const EntityTemplate& entityTemplate);
+        std::vector<unsigned int> getActiveEntityIDs();
         bool spaceEmpty(const Rect& space);
         const std::vector<Entity*>& getEntities();
     };

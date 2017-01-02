@@ -407,6 +407,14 @@ namespace Game {
         currentMaxID += 1;
     }
 
+    std::vector<unsigned int> Map::getActiveEntityIDs() {
+        std::vector<unsigned int> returnVec;
+        for (Game::Entity* currentEntity : entities) {
+            returnVec.push_back(currentEntity->getID());
+        }
+        return returnVec;
+    }
+
     bool Map::spaceEmpty(const Rect& space) {
         bool empty = true;
         for (std::vector<Entity*>::iterator currentEntity = entities.begin(); currentEntity != entities.end(); currentEntity++) {
