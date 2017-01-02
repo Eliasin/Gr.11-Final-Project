@@ -10,28 +10,34 @@ namespace Main {
 
     class GameInstance {
         Game::Map map;
+        std::map<std::string, Game::EntityTemplate> entityTemplates;
         sf::RenderWindow window;
         std::map<std::string, std::map<std::string, sf::Texture>> textureSets;
-        std::map<std::string, Rendering::EntityRenderer> EntityRenderers;
+        std::vector<Rendering::EntityRenderer> entityRenderers;
         Rendering::Camera camera;
         std::vector<IO::KeyHandler*> keyHandlers;
 
+        bool exitGame;
+
+        std::vector<unsigned int> getEntitiesWithoutRenderer();
+
         void loadTextureSetFromPath(std::string setPath, std::string name);
 
-        void initializeRenderingAndWindow();
+        void initializeWindow();
         void initializeTextures();
         void initializeIO();
         void initializeGameLogic();
-
+        void initializeRendering();
         void initializeGame();
-        void tickGame();
 
         void tickIO();
-
         void tickGameLogic();
 
+        void cullRenderers();
         void tickRendering();
+        void tickGame();
     public:
+        GameInstance();
         void run();
     };
 
