@@ -188,20 +188,4 @@ namespace Game {
         EntityTemplate getState();
     };
 
-    class Director {
-        unsigned int pointPool;
-        Map* handling;
-        std::map<EntityTemplate, unsigned int> spawnablesValues;
-        std::vector<Rect> spawnArea;
-    public:
-        Director(Map* handling_);
-        void addSpawnableEntity(const EntityTemplate& entity);
-        void addSpawnArea(const Rect& area);
-        void setPointPool(unsigned int pointPool_);
-        unsigned int getPointPool();
-        void setHandlingMap(Map* handling_);
-        Map* getHandlingMap();
-        const std::map<EntityTemplate, unsigned int> getSpawnableValuesMap();
-    };
-
 }
