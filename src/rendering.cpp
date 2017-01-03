@@ -42,8 +42,14 @@ namespace Rendering {
     EntityEventParser::EntityEventParser(Game::Map* map_, unsigned int entityID_) {
         map = map_;
         entityID = entityID_;
-        lastState = map_->getEntityWithID(entityID_)->getState();
         currentState = STATE::IDLE;
+
+        if (map_ && map_->getEntityWithID(entityID_)) {
+            lastState = map_->getEntityWithID(entityID_)->getState();
+        }
+        else {
+            lastState = Game::EntityTemplate();
+        }
     }
 
     EntityEventParser::EntityEventParser(const EntityEventParser& copying) {
@@ -87,7 +93,7 @@ namespace Rendering {
     }
 
     bool EntityEventParser::entityValid() const {
-        if (map->getEntityWithID(entityID)) {
+        if (map && map->getEntityWithID(entityID)) {
             return true;
         }
         return false;
@@ -100,7 +106,10 @@ namespace Rendering {
     }
 
     Game::Rect EntityEventParser::getEntityHitbox() {
-        return map->getEntityWithID(entityID)->getHitbox();
+        if (entityValid()) {
+            return map->getEntityWithID(entityID)->getHitbox();
+        }
+        return Game::Rect(Game::Vector(0, 0), 1, 1);
     }
 
     const std::vector<std::string> EntityRenderer::stateTextureNames = { "idle", "hit" };
@@ -112,7 +121,7 @@ namespace Rendering {
     }
 
     EntityRenderer::EntityRenderer(const EntityEventParser& entityEventParser_, Rendering::Camera* camera_, sf::Window* window_, std::map<std::string, sf::Texture>* textureSet_) {
-        entityEventParser = entityEventParser_;
+        entityEventParser = EntityEventParser(entityEventParser_);
         camera = camera_;
         textureSet = textureSet_;
         window = window_;
