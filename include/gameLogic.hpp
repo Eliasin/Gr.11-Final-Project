@@ -160,7 +160,7 @@ namespace Game {
         void addActionToQueue(Action* action);
         void tickAndApplyActions();
         Entity* getEntityWithID(unsigned int ID);
-        void createEntity(const EntityTemplate& entityTemplate);
+        unsigned int createEntity(const EntityTemplate& entityTemplate);
         std::vector<unsigned int> getActiveEntityIDs();
         bool spaceEmpty(const Rect& space);
         const std::vector<Entity*>& getEntities();

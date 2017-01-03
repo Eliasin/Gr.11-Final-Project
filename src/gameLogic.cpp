@@ -402,9 +402,10 @@ namespace Game {
         return NULL;
     }
 
-    void Map::createEntity(const EntityTemplate& entityTemplate) {
+    unsigned int Map::createEntity(const EntityTemplate& entityTemplate) {
         entities.push_back(new Entity(entityTemplate, currentMaxID, this));
         currentMaxID += 1;
+        return currentMaxID - 1;
     }
 
     std::vector<unsigned int> Map::getActiveEntityIDs() {
