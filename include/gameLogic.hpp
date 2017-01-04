@@ -29,6 +29,7 @@ namespace Game {
         Rect();
         Rect(const Vector& topLeft_a, unsigned int width_a, unsigned int height_a);
         bool contains(const Vector& point) const;
+        Game::Vector getCenter() const;
         bool intersects(const Rect& rect) const;
     };
 

@@ -50,6 +50,13 @@ namespace Game {
         return x_bound && y_bound;
     }
 
+    Game::Vector Rect::getCenter() const {
+        if (width <= 0 || height <= 0) {
+            return topLeft;
+        }
+        return Game::Vector(topLeft.x + width / 2, topLeft.y + height / 2);
+    }
+
     bool Rect::intersects(const Rect& rect) const {
         return rect.contains(topLeft) || rect.contains(Vector(topLeft.x + width, topLeft.y)) || rect.contains(Vector(topLeft.x + width, topLeft.y + height)) || rect.contains(Vector(topLeft.x, topLeft.y + height));
     }
