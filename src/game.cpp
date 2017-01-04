@@ -38,8 +38,8 @@ namespace Main {
     void GameInstance::loadBackgroundTextureFromPath(std::string path, std::string name) {
         sf::Texture texture;
         if (texture.loadFromFile(path)) {
-            data->backgroundTextures[name] = texture;
-            data->backgroundTextures[name].setRepeated(true);
+            backgroundTextures[name] = texture;
+            backgroundTextures[name].setRepeated(true);
         }
     }
 
@@ -64,7 +64,7 @@ namespace Main {
         camera.setViewBox(Game::Rect(Game::Vector(0, 0), 1920, 1080));
         Rendering::EntityRenderer playerRenderer = Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 0), &camera, &window, &textureSets["player"]);
         entityRenderers.push_back(playerRenderer);
-        data->backgrounds.push_back(Rendering::Background(&data->backgroundTextures["brick"], &camera, &window, Game::Rect(Game::Vector(-2000, -2000), 3000, 3000)));
+        backgrounds.push_back(Rendering::Background(&backgroundTextures["brick"], &camera, &window, Game::Rect(Game::Vector(-2000, -2000), 3000, 3000)));
     }
 
     void GameInstance::initializeGame() {
@@ -101,7 +101,7 @@ namespace Main {
         cullRenderers();
         window.clear(sf::Color::White);
         camera.centerOn(map.getEntityWithID(0)->getHitbox().getCenter(), window);
-        for (Rendering::Background background : data->backgrounds) {
+        for (Rendering::Background background : backgrounds) {
             background.updateBackgroundSprite();
             window.draw(background.getSprite());
         }

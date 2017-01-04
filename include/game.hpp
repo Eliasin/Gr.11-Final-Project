@@ -8,17 +8,14 @@
 
 namespace Main {
 
-    struct OverflowData {
-        std::vector<Rendering::Background> backgrounds;
-        std::map<std::string, sf::Texture> backgroundTextures;
-    };
-
     class GameInstance {
         Game::Map map;
         std::map<std::string, Game::EntityTemplate> entityTemplates;
         sf::RenderWindow window;
         std::map<std::string, std::map<std::string, sf::Texture>> textureSets;
         std::vector<Rendering::EntityRenderer> entityRenderers;
+        std::vector<Rendering::Background> backgrounds;
+        std::map<std::string, sf::Texture> backgroundTextures;
         Rendering::Camera camera;
         std::vector<IO::KeyHandler*> keyHandlers;
 
@@ -43,7 +40,6 @@ namespace Main {
         void tickRendering();
         void tickGame();
     public:
-        OverflowData* data;
         GameInstance();
         void run();
     };
