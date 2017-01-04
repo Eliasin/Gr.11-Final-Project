@@ -209,7 +209,7 @@ namespace Game {
     }
 
     unsigned int Buff::getMaxFrames() {
-        return framesMax    ;
+        return framesMax;
     }
 
     const Buff::Info& Buff::getInfo() {
@@ -366,6 +366,7 @@ namespace Game {
         returnTemplate.stats = baseStats;
         returnTemplate.hitbox = hitbox;
         returnTemplate.behaviourProfile = behaviourProfile;
+        return returnTemplate;
     }
 
     void Map::addActionToQueue(Action* action) {
@@ -373,7 +374,7 @@ namespace Game {
     }
 
     Map::Map() {
-        unsigned int currentMaxID = 0;
+        currentMaxID = 0;
         std::vector<Entity*> entities = std::vector<Entity*>();
         std::vector<Action*> actions = std::vector<Action*>();
     }

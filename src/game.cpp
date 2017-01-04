@@ -50,7 +50,7 @@ namespace Main {
 
     void GameInstance::initializeIO() {
         std::map<sf::Keyboard::Key, Game::Vector> wasdMovementMap = {{sf::Keyboard::W, Game::Vector(0, -1)}, {sf::Keyboard::A, Game::Vector(-1, 0)}, {sf::Keyboard::S, Game::Vector(0, 1)}, {sf::Keyboard::D, Game::Vector(1, 0)}};
-        keyHandlers.push_back(new IO::EntityMovementKeyHandler(wasdMovementMap, &map, 2));
+        keyHandlers.push_back(new IO::EntityMovementKeyHandler(wasdMovementMap, &map, 0));
     }
 
     void GameInstance::initializeGameLogic() {
@@ -62,9 +62,9 @@ namespace Main {
 
     void GameInstance::initializeRendering() {
         camera.setViewBox(Game::Rect(Game::Vector(0, 0), 1920, 1080));
-        Rendering::EntityRenderer playerRenderer = Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 2), &camera, &window, &textureSets["player"]);
+        Rendering::EntityRenderer playerRenderer = Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 0), &camera, &window, &textureSets["player"]);
         entityRenderers.push_back(playerRenderer);
-        data->backgrounds.push_back(Rendering::Background(&data->backgroundTextures["brick"], &camera, &window, Game::Rect(Game::Vector(-500, -500), 1000, 1000)));
+        data->backgrounds.push_back(Rendering::Background(&data->backgroundTextures["brick"], &camera, &window, Game::Rect(Game::Vector(-2000, -2000), 3000, 3000)));
     }
 
     void GameInstance::initializeGame() {
@@ -100,7 +100,7 @@ namespace Main {
     void GameInstance::tickRendering() {
         cullRenderers();
         window.clear(sf::Color::White);
-        camera.centerOn(map.getEntityWithID(2)->getHitbox().getCenter(), window);
+        camera.centerOn(map.getEntityWithID(0)->getHitbox().getCenter(), window);
         for (Rendering::Background background : data->backgrounds) {
             background.updateBackgroundSprite();
             window.draw(background.getSprite());
