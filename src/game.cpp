@@ -3,6 +3,13 @@
 namespace Main {
 
     GameInstance::GameInstance() {
+        map = Game::Map();
+        entityTemplates = std::map<std::string, Game::EntityTemplate>();
+        sf::RenderWindow window;
+        textureSets = std::map<std::string, std::map<std::string, sf::Texture>>();
+        entityRenderers = std::vector<Rendering::EntityRenderer>();
+        camera = Rendering::Camera();
+        keyHandlers = std::vector<IO::KeyHandler*>();
         exitGame = false;
     }
 
@@ -33,19 +40,21 @@ namespace Main {
     }
 
     void GameInstance::initializeIO() {
-
+        std::map<sf::Keyboard::Key, Game::Vector> wasdMovementMap = {{sf::Keyboard::W, Game::Vector(0, -1)}, {sf::Keyboard::A, Game::Vector(-1, 0)}, {sf::Keyboard::S, Game::Vector(0, 1)}, {sf::Keyboard::D, Game::Vector(1, 0)}};
+        keyHandlers.push_back(new IO::EntityMovementKeyHandler(wasdMovementMap, &map, 2));
     }
 
     void GameInstance::initializeGameLogic() {
         Game::EntityStats defaultStats;
         Game::Rect defaultHitbox(Game::Vector(0, 0), 100, 100);
         entityTemplates["player"] = Game::EntityTemplate(defaultStats, defaultHitbox, NULL);
-
         map.createEntity(entityTemplates["player"]);
     }
 
     void GameInstance::initializeRendering() {
-        entityRenderers.push_back(Rendering::EntityRenderer(Rendering::EntityEventParser(&  map, 0), &camera, &window, &textureSets["player"]));
+        camera.setViewBox(Game::Rect(Game::Vector(0, 0), 1920, 1080));
+        Rendering::EntityRenderer playerRenderer = Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 2), &camera, &window, &textureSets["player"]);
+        entityRenderers.push_back(playerRenderer);
     }
 
     void GameInstance::initializeGame() {
@@ -53,6 +62,7 @@ namespace Main {
         initializeTextures();
         initializeIO();
         initializeGameLogic();
+        initializeRendering();
     }
 
     void GameInstance::tickIO() {
@@ -79,10 +89,12 @@ namespace Main {
 
     void GameInstance::tickRendering() {
         cullRenderers();
+        window.clear(sf::Color::White);
         for (Rendering::EntityRenderer& currentRenderer : entityRenderers) {
             currentRenderer.updateEntitySprite();
             window.draw(currentRenderer.getSprite());
         }
+        window.display();
     }
 
     void GameInstance::tickGame() {
