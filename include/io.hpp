@@ -21,32 +21,21 @@ namespace IO {
         virtual void onMouseMove(sf::Vector2<int> position)=0;
     };
 
-    class CameraKeyHandler : public KeyHandler {
-        std::vector<sf::Keyboard::Key> triggerOn;
-        Game::Vector moveBy;
-        Rendering::Camera* camera;
-    public:
-        CameraKeyHandler(const std::vector<sf::Keyboard::Key>& triggerOn_, const Game::Vector& moveBy_, Rendering::Camera* camera_);
-        CameraKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_, Rendering::Camera* camera_);
-        virtual void checkForKeyPress() override;
-        virtual void onKeyPress(sf::Keyboard::Key pressed) override;
-    };
-
     class GameKeyHandler : public KeyHandler {
     protected:
         Game::Map* map;
     };
 
-    class EntityEventKeyHandler : public GameKeyHandler {
-        std::map<sf::Keyboard::Key, void (*)(Game::Entity*)> keyEventMap;
-        Game::Entity* entity;
-    public:
-        EntityEventKeyHandler(const std::map<sf::Keyboard::Key, void (*)(Game::Entity*)>& keyEventMap_, Game::Entity* entity_);
-        EntityEventKeyHandler(const std::map<sf::Keyboard::Key, void (*)(Game::Entity*)>& keyEventMap_);
-        virtual void checkForKeyPress() override;
+    class EntityMovementKeyHandler : public GameKeyHandler {
+    protected:
+        unsigned int entityID;
+        std::map<sf::Keyboard::Key, Game::Vector> keyMovementMap;
         virtual void onKeyPress(sf::Keyboard::Key pressed) override;
-        Game::Entity* getHandledEntity();
-        void setHandledEntity(Game::Entity* entity_);
+        bool entityValid();
+    public:
+        EntityMovementKeyHandler(const std::map<sf::Keyboard::Key, Game::Vector>& keyMovementMap_, Game::Map* map_, unsigned int entityID_);
+        virtual void checkForKeyPress() override;
+        unsigned int getHandlingEntityID();
     };
 
 }

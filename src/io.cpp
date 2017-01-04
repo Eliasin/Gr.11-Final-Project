@@ -6,58 +6,31 @@
 
 namespace IO {
 
-    CameraKeyHandler::CameraKeyHandler(const std::vector<sf::Keyboard::Key>& triggerOn_, const Game::Vector& moveBy_, Rendering::Camera* camera_) {
-        triggerOn = triggerOn_;
-        moveBy = moveBy_;
-        camera = camera_;
+    EntityMovementKeyHandler::EntityMovementKeyHandler(const std::map<sf::Keyboard::Key, Game::Vector>& keyMovementMap_, Game::Map* map_, unsigned int entityID_) {
+        keyMovementMap = keyMovementMap_;
+        map = map_;
+        entityID = entityID_;
     }
 
-    CameraKeyHandler::CameraKeyHandler(sf::Keyboard::Key triggerOn_, const Game::Vector& moveBy_, Rendering::Camera* camera_) {
-        triggerOn.push_back(triggerOn_);
-        moveBy = moveBy_;
-        camera = camera_;
+    bool EntityMovementKeyHandler::entityValid() {
+        if (map && map->getEntityWithID(entityID)) {
+            return true;
+        }
+        return false;
     }
 
-    void CameraKeyHandler::checkForKeyPress() {
-        for (std::vector<sf::Keyboard::Key>::iterator currentKey = triggerOn.begin(); currentKey!= triggerOn.end(); currentKey++) {
-            if (sf::Keyboard::isKeyPressed(*currentKey)) {
-                onKeyPress(*currentKey);
+    void EntityMovementKeyHandler::checkForKeyPress() {
+        for (std::pair<sf::Keyboard::Key, Game::Vector> keyVectorPair : keyMovementMap) {
+            if (sf::Keyboard::isKeyPressed(keyVectorPair.first)) {
+                onKeyPress(keyVectorPair.first);
             }
         }
     }
 
-    void CameraKeyHandler::onKeyPress(sf::Keyboard::Key pressed) {
-        camera->move(moveBy);
-    }
-
-    EntityEventKeyHandler::EntityEventKeyHandler(const std::map<sf::Keyboard::Key, void (*)(Game::Entity*)>& keyEventMap_, Game::Entity* entity_) {
-        keyEventMap = keyEventMap_;
-        entity = entity_;
-    }
-
-    EntityEventKeyHandler::EntityEventKeyHandler(const std::map<sf::Keyboard::Key, void (*)(Game::Entity*)>& keyEventMap_) {
-        keyEventMap = keyEventMap_;
-        entity = NULL;
-    }
-
-    void EntityEventKeyHandler::checkForKeyPress() {
-        for (std::map<sf::Keyboard::Key, void (*)(Game::Entity*)>::iterator currentKey = keyEventMap.begin(); currentKey!= keyEventMap.end(); currentKey++) {
-            if (sf::Keyboard::isKeyPressed(currentKey->first)) {
-                onKeyPress(currentKey->first);
-            }
+    void EntityMovementKeyHandler::onKeyPress(sf::Keyboard::Key pressed) {
+        if (entityValid()) {
+            map->getEntityWithID(entityID)->move(keyMovementMap[pressed]);
         }
-    }
-
-    void EntityEventKeyHandler::onKeyPress(sf::Keyboard::Key pressed) {
-        keyEventMap[pressed](entity);
-    }
-
-    Game::Entity* EntityEventKeyHandler::getHandledEntity() {
-        return entity;
-    }
-
-    void EntityEventKeyHandler::setHandledEntity(Game::Entity* entity_) {
-        entity = entity_;
     }
 
 }
