@@ -1,5 +1,6 @@
 #include "rendering.hpp"
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 
 namespace Rendering {
@@ -31,12 +32,18 @@ namespace Rendering {
     }
 
     sf::Vector2<float> Camera::scaleSpriteToMatcHitbox(const sf::Sprite& sprite, const sf::Window& window, const Game::Rect& hitbox) {
-        scaleSpriteRelativeToWindow(sprite, window, sf::Vector2<float>((float)hitbox.width / (float)viewBox.width, (float)hitbox.height / (float)viewBox.height));
+        return scaleSpriteRelativeToWindow(sprite, window, sf::Vector2<float>((float)hitbox.width / (float)viewBox.width, (float)hitbox.height / (float)viewBox.height));        return sf::Vector2<float>(0.f, 0.f);
     }
 
     sf::Vector2<float> scaleSpriteRelativeToWindow(const sf::Sprite& sprite, const sf::Window& window, const sf::Vector2<float>& size) {
         const sf::Texture* spriteTexture = sprite.getTexture();
-        return sf::Vector2<float>(window.getSize().x * size.x / spriteTexture->getSize().x, window.getSize().y * size.y / spriteTexture->getSize().y);
+        if (!spriteTexture || spriteTexture->getSize().x <= 0 || spriteTexture->getSize().y <= 0) {
+            return sf::Vector2<float>(0.f, 0.f);
+        }
+        float xScale = window.getSize().x * size.x / spriteTexture->getSize().x;
+        float yScale = window.getSize().y * size.y / spriteTexture->getSize().y;
+        return sf::Vector2<float>(xScale, yScale);
+        return sf::Vector2<float>(0, 0);
     }
 
     EntityEventParser::EntityEventParser(Game::Map* map_, unsigned int entityID_) {
@@ -44,7 +51,7 @@ namespace Rendering {
         entityID = entityID_;
         currentState = STATE::IDLE;
 
-        if (map_ && map_->getEntityWithID(entityID_)) {
+        if (entityValid()) {
             lastState = map_->getEntityWithID(entityID_)->getState();
         }
         else {
@@ -126,12 +133,15 @@ namespace Rendering {
         textureSet = textureSet_;
         window = window_;
         lastState = EntityEventParser::STATE::IDLE;
+        sprite.setTexture((*textureSet)["idle"]);
         scaleSprite();
     }
 
     void EntityRenderer::scaleSprite() {
-        sf::Vector2<float> newScale = camera->scaleSpriteToMatcHitbox(sprite, *window, entityEventParser.getEntityHitbox());
-        sprite.setScale(newScale);
+        if (entityEventParser.entityValid()) {
+            sf::Vector2<float> newScale = camera->scaleSpriteToMatcHitbox(sprite, *window, entityEventParser.getEntityHitbox());
+            sprite.setScale(newScale);
+        }
     }
 
     void EntityRenderer::positionSprite() {
