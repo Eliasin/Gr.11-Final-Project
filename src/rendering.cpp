@@ -180,4 +180,29 @@ namespace Rendering {
         return sprite;
     }
 
+    Background::Background(sf::Texture* backgroundTexture_, Camera* camera_, sf::Window* window_, const Game::Rect& renderZone_) {
+        backgroundTexture = backgroundTexture_;
+        camera = camera_;
+        window = window_;
+        renderZone = renderZone_;
+        sprite.setTexture(*backgroundTexture);
+    }
+
+    void Background::setBackgroundTexture(sf::Texture* backgroundTexture_) {
+        backgroundTexture = backgroundTexture_;
+    }
+
+    void Background::updateBackgroundSprite() {
+        sf::Rect<int> newTextureRect = sprite.getTextureRect();
+        sf::Vector2<float> rectScale = camera->scaleSpriteToMatcHitbox(sprite, *window, renderZone);
+        newTextureRect.width = (float)newTextureRect.width * rectScale.x;
+        newTextureRect.height = (float)newTextureRect.height * rectScale.y;
+        sprite.setTextureRect(newTextureRect);
+        sprite.setPosition(camera->translate(renderZone.topLeft));
+    }
+
+    const sf::Sprite& Background::getSprite() {
+        return sprite;
+    }
+
 }

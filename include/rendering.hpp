@@ -65,6 +65,19 @@ namespace Rendering {
         const sf::Sprite& getSprite();
     };
 
+    class Background {
+        sf::Texture* backgroundTexture;
+        sf::Sprite sprite;
+        Camera* camera;
+        sf::Window* window;
+        Game::Rect renderZone;
+    public:
+        Background(sf::Texture* backgroundTexture_, Camera* camera_, sf::Window* window_, const Game::Rect& renderZone_);
+        void updateBackgroundSprite();
+        void setBackgroundTexture(sf::Texture* backgroundTexture_);
+        const sf::Sprite& getSprite();
+    };
+
     sf::Vector2<float> scaleSpriteRelativeToWindow(const sf::Sprite& sprite, const sf::Window& window, const sf::Vector2<float>& size);
 
 }
