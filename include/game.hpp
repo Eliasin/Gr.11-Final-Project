@@ -8,6 +8,11 @@
 
 namespace Main {
 
+    struct OverflowData {
+        std::vector<Rendering::Background> backgrounds;
+        std::map<std::string, sf::Texture> backgroundTextures;
+    };
+
     class GameInstance {
         Game::Map map;
         std::map<std::string, Game::EntityTemplate> entityTemplates;
@@ -22,6 +27,7 @@ namespace Main {
         std::vector<unsigned int> getEntitiesWithoutRenderer();
 
         void loadTextureSetFromPath(std::string setPath, std::string name);
+        void loadBackgroundTextureFromPath(std::string, std::string name);
 
         void initializeWindow();
         void initializeTextures();
@@ -37,6 +43,7 @@ namespace Main {
         void tickRendering();
         void tickGame();
     public:
+        OverflowData* data;
         GameInstance();
         void run();
     };

@@ -35,8 +35,17 @@ namespace Main {
         textureSets[name] = textureSet;
     }
 
+    void GameInstance::loadBackgroundTextureFromPath(std::string path, std::string name) {
+        sf::Texture texture;
+        if (texture.loadFromFile(path)) {
+            data->backgroundTextures[name] = texture;
+            data->backgroundTextures[name].setRepeated(true);
+        }
+    }
+
     void GameInstance::initializeTextures() {
         loadTextureSetFromPath("resources/textures/player", "player");
+        loadBackgroundTextureFromPath("resources/textures/brick.png", "brick");
     }
 
     void GameInstance::initializeIO() {
@@ -55,6 +64,7 @@ namespace Main {
         camera.setViewBox(Game::Rect(Game::Vector(0, 0), 1920, 1080));
         Rendering::EntityRenderer playerRenderer = Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 2), &camera, &window, &textureSets["player"]);
         entityRenderers.push_back(playerRenderer);
+        data->backgrounds.push_back(Rendering::Background(&data->backgroundTextures["brick"], &camera, &window, Game::Rect(Game::Vector(-500, -500), 1000, 1000)));
     }
 
     void GameInstance::initializeGame() {
@@ -90,6 +100,11 @@ namespace Main {
     void GameInstance::tickRendering() {
         cullRenderers();
         window.clear(sf::Color::White);
+        camera.centerOn(map.getEntityWithID(2)->getHitbox().getCenter(), window);
+        for (Rendering::Background background : data->backgrounds) {
+            background.updateBackgroundSprite();
+            window.draw(background.getSprite());
+        }
         for (Rendering::EntityRenderer& currentRenderer : entityRenderers) {
             currentRenderer.updateEntitySprite();
             window.draw(currentRenderer.getSprite());
