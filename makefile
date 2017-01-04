@@ -4,7 +4,7 @@ OBJS = $(addprefix build/, $(notdir $(SRC:.cpp=.o)))
 INCLUDE_PATHS = -Iinclude
 LIBRARY_PATHS = -Llib
 LINKER_FLAGS = -lsfml-system -lsfml-window -lsfml-graphics -lsfml-audio -lstdc++
-COMPILER_FLAGS = -std=c++14 -m32
+COMPILER_FLAGS = -std=c++14 -m32 -Wall
 OUTPUT = bin/Summative.exe
 
 all:
