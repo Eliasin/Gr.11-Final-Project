@@ -1,4 +1,5 @@
 #include "gameLogic.hpp"
+#include <iostream>
 
 namespace Game {
 
@@ -325,9 +326,9 @@ namespace Game {
     }
 
     void Entity::move(Vector move_by) {
-        if (ownerMap->spaceEmpty(hitbox)) {
-        hitbox.topLeft.x += move_by.x;
-        hitbox.topLeft.y += move_by.y;
+        Rect newHitbox = Rect(Vector(hitbox.topLeft.x + move_by.x, hitbox.topLeft.y + move_by.y), hitbox.width, hitbox.height);
+        if (ownerMap->entityCanMoveToSpace(id, newHitbox)) {
+            hitbox = newHitbox;
         }
     }
 
@@ -418,12 +419,22 @@ namespace Game {
 
     bool Map::spaceEmpty(const Rect& space) {
         bool empty = true;
-        for (std::vector<Entity*>::iterator currentEntity = entities.begin(); currentEntity != entities.end(); currentEntity++) {
-            if ((*currentEntity)->getHitbox().intersects(space)) {
+        for (Entity* currentEntity : entities) {
+            if (currentEntity->getHitbox().intersects(space)) {
                 empty = false;
             }
         }
         return empty;
+    }
+
+    bool Map::entityCanMoveToSpace(unsigned int entityID, const Rect& space) {
+        bool moveable = true;
+        for (Entity* currentEntity : entities) {
+            if (currentEntity->getHitbox().intersects(space) && currentEntity->getID() != entityID) {
+                moveable = false;
+            }
+        }
+        return moveable;
     }
 
     const std::vector<Entity*>& Map::getEntities() {

@@ -163,6 +163,7 @@ namespace Game {
         unsigned int createEntity(const EntityTemplate& entityTemplate);
         std::vector<unsigned int> getActiveEntityIDs();
         bool spaceEmpty(const Rect& space);
+        bool entityCanMoveToSpace(unsigned int entityID, const Rect& space);
         const std::vector<Entity*>& getEntities();
     };
 
