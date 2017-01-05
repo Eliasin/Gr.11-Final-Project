@@ -19,6 +19,7 @@ namespace Main {
         Rendering::Camera camera;
         std::vector<IO::KeyHandler*> keyHandlers;
         sf::Texture absoluteBackgroundTexture;
+        sf::Sprite absoluteBackgroundSprite;
 
         bool exitGame;
 
