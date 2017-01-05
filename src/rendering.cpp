@@ -43,7 +43,6 @@ namespace Rendering {
         float xScale = window.getSize().x * size.x / spriteTexture->getSize().x;
         float yScale = window.getSize().y * size.y / spriteTexture->getSize().y;
         return sf::Vector2<float>(xScale, yScale);
-        return sf::Vector2<float>(0, 0);
     }
 
     EntityEventParser::EntityEventParser(Game::Map* map_, unsigned int entityID_) {
