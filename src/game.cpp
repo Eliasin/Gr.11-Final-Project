@@ -27,7 +27,8 @@ namespace Main {
         for (float frameTime : lastFrameTimes) {
             frameTimeSum += frameTime;
         }
-        return frameTimeSum / (float)lastFrameTimes.size();
+        float averageFrameTime = frameTimeSum / (float)lastFrameTimes.size();
+        return pow(averageFrameTime, -1);
     }
 
     void GameInstance::initializeWindow() {
