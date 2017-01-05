@@ -58,6 +58,7 @@ namespace Main {
         Game::Rect defaultHitbox(Game::Vector(0, 0), 100, 100);
         entityTemplates["player"] = Game::EntityTemplate(defaultStats, defaultHitbox, NULL);
         map.createEntity(entityTemplates["player"]);
+        map.setPlayableArea(Game::Rect(Game::Vector(-2000, -2000), 4000, 4000));
     }
 
     void GameInstance::initializeRendering() {
