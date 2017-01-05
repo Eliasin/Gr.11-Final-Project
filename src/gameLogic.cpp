@@ -50,6 +50,14 @@ namespace Game {
         return x_bound && y_bound;
     }
 
+    bool Rect::contains(const Rect& rect) const {
+        bool containsTopLeft = contains(rect.topLeft);
+        bool containsTopRight = contains(Vector(rect.topLeft.x + rect.width, topLeft.y));
+        bool containsBottomLeft = contains(Vector(rect.topLeft.x, rect.topLeft.y + rect.height));
+        bool containsBottomRight = contains(Vector(rect.topLeft.x + rect.width, rect.topLeft.y + rect.height));
+        return containsTopLeft && containsTopRight && containsBottomLeft && containsBottomRight;
+    }
+
     Game::Vector Rect::getCenter() const {
         if (width <= 0 || height <= 0) {
             return topLeft;
@@ -377,6 +385,7 @@ namespace Game {
         currentMaxID = 0;
         std::vector<Entity*> entities = std::vector<Entity*>();
         std::vector<Action*> actions = std::vector<Action*>();
+        playableArea = Rect(Vector(0, 0), 0, 0);
     }
 
     Map::~Map() {
@@ -435,10 +444,16 @@ namespace Game {
         return empty;
     }
 
+    void Map::setPlayableArea(const Rect& playableArea_) {
+        playableArea = playableArea_;
+    }
+
     bool Map::entityCanMoveToSpace(unsigned int entityID, const Rect& space) {
         bool moveable = true;
+        bool validPlayableArea = (playableArea.width <= 0 || playableArea.height <= 0);
+        bool inPlayableArea = playableArea.contains(space);
         for (Entity* currentEntity : entities) {
-            if (currentEntity->getHitbox().intersects(space) && currentEntity->getID() != entityID) {
+            if (currentEntity->getHitbox().intersects(space) && currentEntity->getID() != entityID && inPlayableArea && validPlayableArea) {
                 moveable = false;
             }
         }

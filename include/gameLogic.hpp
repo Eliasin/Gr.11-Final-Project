@@ -29,6 +29,7 @@ namespace Game {
         Rect();
         Rect(const Vector& topLeft_a, unsigned int width_a, unsigned int height_a);
         bool contains(const Vector& point) const;
+        bool contains(const Rect& rect) const;
         Game::Vector getCenter() const;
         bool intersects(const Rect& rect) const;
     };
@@ -155,6 +156,7 @@ namespace Game {
         unsigned int currentMaxID;
         std::vector<Entity*> entities;
         std::vector<Action*> actions;
+        Rect playableArea;
     public:
         Map();
         ~Map();
@@ -164,6 +166,7 @@ namespace Game {
         unsigned int createEntity(const EntityTemplate& entityTemplate);
         std::vector<unsigned int> getActiveEntityIDs();
         bool spaceEmpty(const Rect& space);
+        void setPlayableArea(const Rect& playableArea_);
         bool entityCanMoveToSpace(unsigned int entityID, const Rect& space);
         const std::vector<Entity*>& getEntities();
     };
