@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <cmath>
 #include "gameLogic.hpp"
 #include "rendering.hpp"
 #include "io.hpp"
