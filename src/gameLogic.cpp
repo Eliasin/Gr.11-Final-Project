@@ -45,8 +45,8 @@ namespace Game {
     }
 
     bool Rect::contains(const Vector& point) const {
-        bool x_bound = (point.x >= topLeft.x && point.x <= topLeft.x + width) || (point.x <= topLeft.x && point.x >= topLeft.x + width);
-        bool y_bound = (point.y >= topLeft.y && point.y <= topLeft.y - height) || (point.y <= topLeft.y && point.y >= topLeft.y - height);
+        bool x_bound = (point.x >= topLeft.x && point.x <= topLeft.x + width);
+        bool y_bound = (point.y >= topLeft.y && point.y <= topLeft.y + height);
         return x_bound && y_bound;
     }
 
@@ -450,10 +450,10 @@ namespace Game {
 
     bool Map::entityCanMoveToSpace(unsigned int entityID, const Rect& space) {
         bool moveable = true;
-        bool validPlayableArea = (playableArea.width <= 0 || playableArea.height <= 0);
         bool inPlayableArea = playableArea.contains(space);
         for (Entity* currentEntity : entities) {
-            if (currentEntity->getHitbox().intersects(space) && currentEntity->getID() != entityID && inPlayableArea && validPlayableArea) {
+            bool spaceNotEmpty = currentEntity->getHitbox().intersects(space) && currentEntity->getID() != entityID;
+            if (spaceNotEmpty || !inPlayableArea) {
                 moveable = false;
             }
         }
