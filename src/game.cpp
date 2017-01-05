@@ -3,6 +3,7 @@
 namespace Main {
 
     GameInstance::GameInstance() {
+        frameClock = sf::Clock();
         map = Game::Map();
         entityTemplates = std::map<std::string, Game::EntityTemplate>();
         sf::RenderWindow window;
@@ -128,9 +129,13 @@ namespace Main {
     void GameInstance::run() {
         initializeGame();
         while (!exitGame) {
+            frameClock.restart();
             tickIO();
             tickGame();
             tickRendering();
+            if (frameClock.getElapsedTime().asSeconds() < TIME_PER_FRAME) {
+                sf::sleep(sf::seconds(TIME_PER_FRAME) - frameClock.getElapsedTime());
+            }
         }
     }
 

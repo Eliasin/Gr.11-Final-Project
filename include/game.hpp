@@ -11,6 +11,7 @@ namespace Main {
     class GameInstance {
         const unsigned int FPS_CAP = 30;
         const double TIME_PER_FRAME = 1.f / (float)FPS_CAP;
+        sf::Clock frameClock;
 
         Game::Map map;
         std::map<std::string, Game::EntityTemplate> entityTemplates;
