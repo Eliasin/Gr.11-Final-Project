@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <cmath>
+#include <queue>
 #include "gameLogic.hpp"
 #include "rendering.hpp"
 #include "io.hpp"
@@ -11,8 +12,9 @@ namespace Main {
 
     class GameInstance {
         const unsigned int FPS_CAP = 30;
-        const double TIME_PER_FRAME = 1.f / (float)FPS_CAP;
+        const float TIME_PER_FRAME = 1.f / (float)FPS_CAP;
         sf::Clock frameClock;
+        std::queue<float> lastFrameTimes;
 
         Game::Map map;
         std::map<std::string, Game::EntityTemplate> entityTemplates;
@@ -28,7 +30,7 @@ namespace Main {
 
         bool exitGame;
 
-        std::vector<unsigned int> getEntitiesWithoutRenderer();
+        float getAvgFPS();
 
         void loadTextureSetFromPath(std::string setPath, std::string name);
         void loadBackgroundTextureFromPath(std::string, std::string name);
