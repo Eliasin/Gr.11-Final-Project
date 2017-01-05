@@ -17,6 +17,19 @@ namespace Main {
         absoluteBackgroundTexture = sf::Texture();
     }
 
+    void GameInstance::addFrameTimeToAvg(float frameTime) {
+        lastFrameTimes.push_back(frameTime);
+        lastFrameTimes.pop_front();
+    }
+
+    float GameInstance::getAvgFPS() {
+        float frameTimeSum = 0.f;
+        for (float frameTime : lastFrameTimes) {
+            frameTimeSum += frameTime;
+        }
+        return frameTimeSum / (float)lastFrameTimes.size();
+    }
+
     void GameInstance::initializeWindow() {
         window.create(sf::VideoMode::getDesktopMode(), "Gr.11-Final-Project");
         camera.setPos(Game::Vector(0, 0));
@@ -74,6 +87,10 @@ namespace Main {
 
         absoluteBackgroundSprite.setTexture(absoluteBackgroundTexture);
         absoluteBackgroundSprite.scale(Rendering::scaleSpriteRelativeToWindow(absoluteBackgroundSprite, window, sf::Vector2<float>(1.f, 1.f)));
+
+        for (unsigned int i = 0; i < 5; i++) {
+            lastFrameTimes.push_back(0.f);
+        }
     }
 
     void GameInstance::initializeGame() {
@@ -136,6 +153,7 @@ namespace Main {
             if (frameClock.getElapsedTime().asSeconds() < TIME_PER_FRAME) {
                 sf::sleep(sf::seconds(TIME_PER_FRAME) - frameClock.getElapsedTime());
             }
+            addFrameTimeToAvg(frameClock.getElapsedTime().asSeconds());
         }
     }
 
