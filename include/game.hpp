@@ -18,6 +18,7 @@ namespace Main {
         std::map<std::string, sf::Texture> backgroundTextures;
         Rendering::Camera camera;
         std::vector<IO::KeyHandler*> keyHandlers;
+        sf::Texture absoluteBackgroundTexture;
 
         bool exitGame;
 

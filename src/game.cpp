@@ -8,9 +8,12 @@ namespace Main {
         sf::RenderWindow window;
         textureSets = std::map<std::string, std::map<std::string, sf::Texture>>();
         entityRenderers = std::vector<Rendering::EntityRenderer>();
+        backgrounds = std::vector<Rendering::Background>();
+        backgroundTextures = std::map<std::string, sf::Texture>();
         camera = Rendering::Camera();
         keyHandlers = std::vector<IO::KeyHandler*>();
         exitGame = false;
+        absoluteBackgroundTexture = sf::Texture();
     }
 
     void GameInstance::initializeWindow() {
