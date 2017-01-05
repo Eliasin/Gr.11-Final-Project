@@ -49,6 +49,7 @@ namespace Main {
     void GameInstance::initializeTextures() {
         loadTextureSetFromPath("resources/textures/player", "player");
         loadBackgroundTextureFromPath("resources/textures/brick.png", "brick");
+        absoluteBackgroundTexture.loadFromFile("resources/textures/background.png");
     }
 
     void GameInstance::initializeIO() {
@@ -69,6 +70,9 @@ namespace Main {
         Rendering::EntityRenderer playerRenderer = Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 0), &camera, &window, &textureSets["player"]);
         entityRenderers.push_back(playerRenderer);
         backgrounds.push_back(Rendering::Background(&backgroundTextures["brick"], &camera, &window, Game::Rect(Game::Vector(-2000, -2000), 4000, 4000)));
+
+        absoluteBackgroundSprite.setTexture(absoluteBackgroundTexture);
+        absoluteBackgroundSprite.scale(Rendering::scaleSpriteRelativeToWindow(absoluteBackgroundSprite, window, sf::Vector2<float>(1.f, 1.f)));
     }
 
     void GameInstance::initializeGame() {
@@ -104,6 +108,7 @@ namespace Main {
     void GameInstance::tickRendering() {
         cullRenderers();
         window.clear(sf::Color::White);
+        window.draw(absoluteBackgroundSprite);
         camera.centerOn(map.getEntityWithID(0)->getHitbox().getCenter(), window);
         for (Rendering::Background background : backgrounds) {
             background.updateBackgroundSprite();
