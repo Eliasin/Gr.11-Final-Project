@@ -97,7 +97,7 @@ namespace Main {
         absoluteBackgroundSprite.setTexture(absoluteBackgroundTexture);
         absoluteBackgroundSprite.scale(Rendering::scaleSpriteRelativeToWindow(absoluteBackgroundSprite, window, sf::Vector2<float>(1.f, 1.f)));
 
-        for (unsigned int i = 0; i < 30; i++) {
+        for (unsigned int i = 0; i < 210; i++) {
             lastFrameTimes.push_back(0.f);
         }
 
@@ -184,7 +184,7 @@ namespace Main {
             tickRendering();
 
             if (frameClock.getElapsedTime().asSeconds() < TIME_PER_FRAME) {
-                sf::sleep(sf::seconds(TIME_PER_FRAME) - frameClock.getElapsedTime());
+                //sf::sleep(sf::seconds(TIME_PER_FRAME) - frameClock.getElapsedTime());
             }
             addFrameTimeToAvg(frameClock.getElapsedTime().asSeconds());
         }
