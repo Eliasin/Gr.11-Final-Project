@@ -111,7 +111,6 @@ namespace Game {
         tempEntity.max_health_p += adding.max_health_p;
         tempEntity.stamina_p += adding.stamina_p;
         tempEntity.armor_p += adding.armor_p;
-        tempEntity.moveSpeed_p += adding.moveSpeed_p;
         tempEntity.sight_p += adding.sight_p;
         tempEntity.attackSpeed_p += adding.attackSpeed_p;
         return tempEntity;
@@ -129,7 +128,6 @@ namespace Game {
         tempEntity.max_health_p -= subtracting.max_health_p;
         tempEntity.stamina_p -= subtracting.stamina_p;
         tempEntity.armor_p -= subtracting.armor_p;
-        tempEntity.moveSpeed_p -= subtracting.moveSpeed_p;
         tempEntity.sight_p -= subtracting.sight_p;
         tempEntity.attackSpeed_p -= subtracting.attackSpeed_p;
         return tempEntity;
@@ -146,7 +144,6 @@ namespace Game {
         max_health_p += adding.max_health_p;
         stamina_p += adding.stamina_p;
         armor_p += adding.armor_p;
-        moveSpeed_p += adding.moveSpeed_p;
         sight_p += adding.sight_p;
         attackSpeed_p += adding.attackSpeed_p;
     }
@@ -162,7 +159,6 @@ namespace Game {
         max_health_p -= subtracting.max_health_p;
         stamina_p -= subtracting.stamina_p;
         armor_p -= subtracting.armor_p;
-        moveSpeed_p -= subtracting.moveSpeed_p;
         sight_p -= subtracting.sight_p;
         attackSpeed_p -= subtracting.attackSpeed_p;
     }
