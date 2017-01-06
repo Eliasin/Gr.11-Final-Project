@@ -80,7 +80,6 @@ namespace Game {
         max_health_p = 1;
         stamina_p = 1;
         armor_p = 1;
-        moveSpeed_p = 1;
         sight_p = 1;
         attackSpeed_p = 1;
     }
@@ -96,7 +95,6 @@ namespace Game {
         max_health_p = copying.max_health_p;
         stamina_p = copying.stamina_p;
         armor_p = copying.armor_p;
-        moveSpeed_p = copying.moveSpeed_p;
         sight_p = copying.sight_p;
         attackSpeed_p = copying.attackSpeed_p;
     }
@@ -341,7 +339,7 @@ namespace Game {
     }
 
     void Entity::move(Vector move_by) {
-        Rect newHitbox = Rect(Vector(hitbox.topLeft.x + move_by.x, hitbox.topLeft.y + move_by.y), hitbox.width, hitbox.height);
+        Rect newHitbox = Rect(Vector(hitbox.topLeft.x + move_by.x * getFinalStats().moveSpeed, hitbox.topLeft.y + move_by.y * getFinalStats().moveSpeed), hitbox.width, hitbox.height);
         if (ownerMap->entityCanMoveToSpace(id, newHitbox)) {
             hitbox = newHitbox;
         }

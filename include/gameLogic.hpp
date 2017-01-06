@@ -42,7 +42,7 @@ namespace Game {
         void operator+=(const EntityStats& adding);
         void operator-=(const EntityStats& subtracting);
         int max_health, health, stamina, armor, moveSpeed, sight, attackSpeed;
-        int max_health_p, stamina_p, armor_p, moveSpeed_p, sight_p, attackSpeed_p;
+        int max_health_p, stamina_p, armor_p, sight_p, attackSpeed_p;
     };
 
     struct MovementMods {
