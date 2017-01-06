@@ -12,7 +12,7 @@ namespace Main {
 
     class GameInstance {
         const unsigned int FPS_CAP = 30;
-        const float TIME_PER_FRAME = 1.f / (float)FPS_CAP;
+        const float TIME_PER_FRAME = 1.f / static_cast<float>(FPS_CAP);
         sf::Clock frameClock;
         std::list<float> lastFrameTimes;
         sf::Text fpsText;
@@ -52,7 +52,8 @@ namespace Main {
 
         void cullRenderers();
         void drawBackgrounds();
-        void drawEntities(); 
+        void drawEntities();
+        void updateFPSText();
         void tickRendering();
 
         void tickGame();

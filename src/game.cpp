@@ -63,8 +63,8 @@ namespace Main {
 
     void GameInstance::loadFontFromPath(std::string path, std::string name) {
         sf::Font font;
-        if (font.loadFromFile("arial.ttf")) {
-            fonts["name"] = font;
+        if (font.loadFromFile(path)) {
+            fonts[name] = font;
         }
     }
 
@@ -97,7 +97,7 @@ namespace Main {
         absoluteBackgroundSprite.setTexture(absoluteBackgroundTexture);
         absoluteBackgroundSprite.scale(Rendering::scaleSpriteRelativeToWindow(absoluteBackgroundSprite, window, sf::Vector2<float>(1.f, 1.f)));
 
-        for (unsigned int i = 0; i < 5; i++) {
+        for (unsigned int i = 0; i < 30; i++) {
             lastFrameTimes.push_back(0.f);
         }
 
@@ -105,6 +105,7 @@ namespace Main {
         fpsText.setCharacterSize(32);
         fpsText.setFillColor(sf::Color::Yellow);
         fpsText.setOutlineColor(sf::Color::Black);
+        fpsText.setPosition(sf::Vector2<float>(0, 0));
     }
 
     void GameInstance::initializeGame() {
@@ -151,16 +152,22 @@ namespace Main {
         }
     }
 
+    void GameInstance::updateFPSText() {
+        fpsText.setString(std::to_string(static_cast<int>(getAvgFPS())));
+    }
+
     void GameInstance::tickRendering() {
         cullRenderers();
         window.clear(sf::Color::White);
+
         window.draw(absoluteBackgroundSprite);
         camera.centerOn(map.getEntityWithID(0)->getHitbox().getCenter(), window);
 
         drawBackgrounds();
         drawEntities();
-
+        updateFPSText();
         window.draw(fpsText);
+
         window.display();
     }
 
@@ -175,6 +182,7 @@ namespace Main {
             tickIO();
             tickGame();
             tickRendering();
+
             if (frameClock.getElapsedTime().asSeconds() < TIME_PER_FRAME) {
                 sf::sleep(sf::seconds(TIME_PER_FRAME) - frameClock.getElapsedTime());
             }
