@@ -70,19 +70,19 @@ namespace Game {
     }
 
     EntityStats::EntityStats() {
-        max_health = 0;
-        health = 0;
+        max_health = 1;
+        health = 1;
         stamina = 0;
         armor = 0;
-        moveSpeed = 0;
+        moveSpeed = 1;
         sight = 0;
         attackSpeed = 0;
-        max_health_p = 0;
-        stamina_p = 0;
-        armor_p = 0;
-        moveSpeed_p = 0;
-        sight_p = 0;
-        attackSpeed_p = 0;
+        max_health_p = 1;
+        stamina_p = 1;
+        armor_p = 1;
+        moveSpeed_p = 1;
+        sight_p = 1;
+        attackSpeed_p = 1;
     }
 
     EntityStats::EntityStats(const EntityStats& copying) {
