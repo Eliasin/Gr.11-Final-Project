@@ -59,13 +59,18 @@ namespace Game {
 
     class Buff {
     protected:
+        EntityStats changes;
         unsigned int framesLeft;
         unsigned int framesMax;
         unsigned int frameInterval;
     public:
-        virtual unsigned int getFramesLeft() const;
-        virtual unsigned int getMaxFrames() const;
-        virtual void apply(const EntityStats& entity)=0;
+        Buff();
+        Buff(const Buff& copying);
+        Buff(const EntityStats& changes_, unsigned int framesMax_, unsigned int frameInterval_);
+        unsigned int getFramesLeft() const;
+        unsigned int getMaxFrames() const;
+        void apply(EntityStats& stats) const;
+        void tick();
     };
 
     struct EntityTemplate {
@@ -155,7 +160,7 @@ namespace Game {
         friend Map;
         unsigned int id;
         Rect hitbox;
-        std::vector<std::unique_ptr<Buff>> buffs;
+        std::vector<Buff> buffs;
         EntityStats baseStats;
         BehaviourProfile* behaviourProfile;
         Map* ownerMap;
@@ -167,7 +172,7 @@ namespace Game {
         void setHitbox(const Rect& newHitbox);
         void move(const Vector& moveByy);
         void moveWithoutModifier(const Vector& moveBy);
-        void addBuff(std::unique_ptr<Buff>& buff);
+        void addBuff(const Buff& buff);
         const EntityStats& getBaseStats();
         void setStats(const EntityStats& stats);
         EntityStats getFinalStats();

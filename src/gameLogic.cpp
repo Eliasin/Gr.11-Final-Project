@@ -143,12 +143,42 @@ namespace Game {
 
     }
 
+    Buff::Buff() {
+        changes = EntityStats();
+        framesLeft = 0;
+        framesMax = 0;
+        frameInterval = 0;
+    }
+
+    Buff::Buff(const Buff& copying) {
+        changes = copying.changes;
+        framesLeft = copying.framesLeft;
+        framesMax = copying.framesMax;
+        frameInterval = copying.frameInterval;
+    }
+
+    Buff::Buff(const EntityStats& changes_, unsigned int framesMax_, unsigned int frameInterval_) {
+        changes = changes_;
+        framesMax = framesMax_;
+        frameInterval = frameInterval_;
+    }
+
     unsigned int Buff::getFramesLeft() const {
         return framesLeft;
     }
 
     unsigned int Buff::getMaxFrames() const {
         return framesMax;
+    }
+
+    void Buff::apply(EntityStats& stats) const {
+        stats += changes;
+    }
+
+    void Buff::tick() {
+        if (framesLeft > 0) {
+            framesLeft -= 1;
+        }
     }
 
     EntityTemplate::EntityTemplate() {
@@ -281,8 +311,8 @@ namespace Game {
         }
     }
 
-    void Entity::addBuff(std::unique_ptr<Buff>& buff) {
-        buffs.push_back(std::move(buff));
+    void Entity::addBuff(const Buff& buff) {
+        buffs.push_back(buff);
     }
 
     const EntityStats& Entity::getBaseStats() {
@@ -295,8 +325,8 @@ namespace Game {
 
     EntityStats Entity::getFinalStats() {
         EntityStats tempStats = EntityStats(baseStats);
-        for (std::unique_ptr<Buff>& buff : buffs) {
-            buff->apply(tempStats);
+        for (Buff& buff : buffs) {
+            buff.apply(tempStats);
         }
         return tempStats;
     }
