@@ -153,7 +153,7 @@ namespace Main {
     }
 
     void GameInstance::updateFPSText() {
-        fpsText.setString(std::to_string(static_cast<int>(getAvgFPS())));
+        fpsText.setString(std::to_string(static_cast<int>(std::ceil(getAvgFPS()))));
     }
 
     void GameInstance::tickRendering() {
