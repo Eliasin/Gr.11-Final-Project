@@ -4,6 +4,7 @@
 #include <memory>
 #include <cmath>
 #include <list>
+#include <fstream>
 #include "gameLogic.hpp"
 #include "rendering.hpp"
 #include "io.hpp"
@@ -28,8 +29,7 @@ namespace Main {
         std::map<std::string, sf::Texture> backgroundTextures;
         Rendering::Camera camera;
         std::vector<IO::KeyHandler*> keyHandlers;
-        sf::Texture absoluteBackgroundTexture;
-        sf::Sprite absoluteBackgroundSprite;
+        std::map<std::string, std::vector<sf::Texture>> absoluteBackgroundTextures;
 
         bool exitGame;
 
@@ -37,6 +37,7 @@ namespace Main {
         float getAvgFPS();
 
         void loadTextureSetFromPath(std::string setPath, std::string name);
+        void loadAbsoluteBackgroundTexturesFromPath(std::string path, std::string name);
         void loadBackgroundTextureFromPath(std::string path, std::string name);
         void loadFontFromPath(std::string path, std::string name);
 

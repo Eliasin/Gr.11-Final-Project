@@ -14,7 +14,7 @@ namespace Main {
         camera = Rendering::Camera();
         keyHandlers = std::vector<IO::KeyHandler*>();
         exitGame = false;
-        absoluteBackgroundTexture = sf::Texture();
+        absoluteBackgroundTextures = std::map<std::string, std::vector<sf::Texture>>();
     }
 
     void GameInstance::addFrameTimeToAvg(float frameTime) {
@@ -53,6 +53,23 @@ namespace Main {
         textureSets[name] = textureSet;
     }
 
+    void GameInstance::loadAbsoluteBackgroundTexturesFromPath(std::string path, std::string name) {
+        std::vector<sf::Texture> textureSet;
+        for (unsigned int i = 0;; i++) {
+            std::string filePath = path + std::to_string(i) + ".png";
+            std::ifstream file(filePath);
+            if (file) {
+                sf::Texture texture;
+                texture.loadFromFile(filePath);
+                textureSet.push_back(texture);
+            }
+            else {
+                break;
+            }
+        }
+        absoluteBackgroundTextures[name] = textureSet;
+    }
+
     void GameInstance::loadBackgroundTextureFromPath(std::string path, std::string name) {
         sf::Texture texture;
         if (texture.loadFromFile(path)) {
@@ -71,7 +88,6 @@ namespace Main {
     void GameInstance::initializeTextures() {
         loadTextureSetFromPath("resources/textures/player", "player");
         loadBackgroundTextureFromPath("resources/textures/brick.png", "brick");
-        absoluteBackgroundTexture.loadFromFile("resources/textures/background.png");
         loadFontFromPath("resources/fonts/arial.ttf", "arial");
     }
 
@@ -93,10 +109,6 @@ namespace Main {
         Rendering::EntityRenderer playerRenderer = Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 0), &camera, &window, &textureSets["player"]);
         entityRenderers.push_back(playerRenderer);
         backgrounds.push_back(Rendering::Background(&backgroundTextures["brick"], &camera, &window, Game::Rect(Game::Vector(-2000, -2000), 4000, 4000)));
-
-        absoluteBackgroundSprite.setTexture(absoluteBackgroundTexture);
-        absoluteBackgroundSprite.scale(Rendering::scaleSpriteRelativeToWindow(absoluteBackgroundSprite, window, sf::Vector2<float>(1.f, 1.f)));
-
         for (unsigned int i = 0; i < 210; i++) {
             lastFrameTimes.push_back(TIME_PER_FRAME);
         }
@@ -161,7 +173,6 @@ namespace Main {
         cullRenderers();
         window.clear(sf::Color::White);
 
-        window.draw(absoluteBackgroundSprite);
         camera.centerOn(map.getEntityWithID(0)->getHitbox().getCenter(), window);
 
         drawBackgrounds();
