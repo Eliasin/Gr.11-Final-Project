@@ -15,6 +15,7 @@ namespace Main {
         const float TIME_PER_FRAME = 1.f / (float)FPS_CAP;
         sf::Clock frameClock;
         std::list<float> lastFrameTimes;
+        sf::Text fpsText;
 
         std::map<std::string, sf::Font> fonts;
 

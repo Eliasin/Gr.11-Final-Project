@@ -72,6 +72,7 @@ namespace Main {
         loadTextureSetFromPath("resources/textures/player", "player");
         loadBackgroundTextureFromPath("resources/textures/brick.png", "brick");
         absoluteBackgroundTexture.loadFromFile("resources/textures/background.png");
+        loadFontFromPath("resources/fonts/arial.ttf", "arial");
     }
 
     void GameInstance::initializeIO() {
@@ -99,6 +100,10 @@ namespace Main {
         for (unsigned int i = 0; i < 5; i++) {
             lastFrameTimes.push_back(0.f);
         }
+
+        fpsText.setFont(fonts["arial"]);
+        fpsText.setCharacterSize(32);
+        fpsText.setColor(sf:Color:Yellow);
     }
 
     void GameInstance::initializeGame() {
@@ -144,6 +149,7 @@ namespace Main {
             currentRenderer.updateEntitySprite();
             window.draw(currentRenderer.getSprite());
         }
+        window.draw(fpsText);
         window.display();
     }
 
