@@ -39,10 +39,11 @@ namespace Game {
         EntityStats(const EntityStats& copying);
         EntityStats operator+(const EntityStats& adding);
         EntityStats operator-(const EntityStats& subtracting);
+        void operator=(const EntityStats& copying);
         void operator+=(const EntityStats& adding);
         void operator-=(const EntityStats& subtracting);
-        int max_health, health, stamina, armor, moveSpeed, sight, attackSpeed;
-        int max_health_p, stamina_p, armor_p, sight_p, attackSpeed_p;
+        std::map<std::string, int> stats;
+        std::map<std::string, float> statModifiers;
     };
 
     struct MovementMods {
@@ -57,35 +58,14 @@ namespace Game {
     };
 
     class Buff {
-    public:
-        enum class Type {
-            STATS,
-            MOVEMENT
-        };
-        union Info {
-            Info();
-            Info(const Info& info_a, const Type& type);
-            EntityStats statChanges;
-            MovementMods movementChanges;
-        };
-        struct BuffTemplate {
-            Info info;
-            Type type;
-            int maxFrames, frameInterval;
-        };
-    private:
+    protected:
         unsigned int framesLeft;
         unsigned int framesMax;
         unsigned int frameInterval;
-        Info info;
-        Type type;
     public:
-        Buff(const Info& buffInfo, const Type& typeInfo, unsigned int frames, unsigned int interval);
-        Buff(const Buff& copying);
-        unsigned int getFramesLeft();
-        unsigned int getMaxFrames();
-        const Info& getInfo();
-        Type getType();
+        virtual unsigned int getFramesLeft() const;
+        virtual unsigned int getMaxFrames() const;
+        virtual void apply(const EntityStats& entity)=0;
     };
 
     struct EntityTemplate {
@@ -175,7 +155,7 @@ namespace Game {
         friend Map;
         unsigned int id;
         Rect hitbox;
-        std::vector<Buff> buffs;
+        std::vector<std::unique_ptr<Buff>> buffs;
         EntityStats baseStats;
         BehaviourProfile* behaviourProfile;
         Map* ownerMap;
@@ -186,7 +166,7 @@ namespace Game {
         const Rect getHitbox();
         void setHitbox(Rect new_hitbox);
         void move(Vector move_by);
-        void addBuff(const Buff& buff);
+        void addBuff(std::unique_ptr<Buff>& buff);
         const EntityStats& getBaseStats();
         void setStats(const EntityStats& stats);
         EntityStats getFinalStats();

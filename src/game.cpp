@@ -76,8 +76,7 @@ namespace Main {
     }
 
     void GameInstance::initializeIO() {
-        int playerMovespeed = 10;
-        std::map<sf::Keyboard::Key, Game::Vector> wasdMovementMap = {{sf::Keyboard::W, Game::Vector(0, playerMovespeed * -1)}, {sf::Keyboard::A, Game::Vector(playerMovespeed * -1, 0)}, {sf::Keyboard::S, Game::Vector(0, playerMovespeed)}, {sf::Keyboard::D, Game::Vector(playerMovespeed, 0)}};
+        std::map<sf::Keyboard::Key, Game::Vector> wasdMovementMap = {{sf::Keyboard::W, Game::Vector(0, -1)}, {sf::Keyboard::A, Game::Vector(-1, 0)}, {sf::Keyboard::S, Game::Vector(0, 1)}, {sf::Keyboard::D, Game::Vector(1, 0)}};
         keyHandlers.push_back(new IO::EntityMovementKeyHandler(wasdMovementMap, &map, 0));
     }
 

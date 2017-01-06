@@ -70,97 +70,67 @@ namespace Game {
     }
 
     EntityStats::EntityStats() {
-        max_health = 1;
-        health = 1;
-        stamina = 0;
-        armor = 0;
-        moveSpeed = 1;
-        sight = 0;
-        attackSpeed = 0;
-        max_health_p = 1;
-        stamina_p = 1;
-        armor_p = 1;
-        sight_p = 1;
-        attackSpeed_p = 1;
+        stats["max_hp"] = 1;
+        stats["hp"] = 1;
+        stats["stam"] = 1;
+        stats["sight"] = 1;
+        stats["atkSpd"] = 1;
+
+        statModifiers["max_hp"] = 1;
+        statModifiers["stamina"] = 1;
+        statModifiers["sight"] = 1;
+        statModifiers["atkSpd"] = 1;
+        statModifiers["move"] = 10;
     }
 
     EntityStats::EntityStats(const EntityStats& copying) {
-        max_health = copying.max_health;
-        health = copying.health;
-        stamina = copying.stamina;
-        armor = copying.armor;
-        moveSpeed = copying.moveSpeed;
-        sight = copying.sight;
-        attackSpeed = copying.attackSpeed;
-        max_health_p = copying.max_health_p;
-        stamina_p = copying.stamina_p;
-        armor_p = copying.armor_p;
-        sight_p = copying.sight_p;
-        attackSpeed_p = copying.attackSpeed_p;
+        stats = copying.stats;
+        statModifiers = copying.statModifiers;
     }
 
     EntityStats EntityStats::operator+(const EntityStats& adding) {
-        EntityStats tempEntity = EntityStats(*this);
-        tempEntity.max_health += adding.max_health;
-        tempEntity.health += adding.health;
-        tempEntity.stamina += adding.stamina;
-        tempEntity.armor += adding.armor;
-        tempEntity.moveSpeed += adding.moveSpeed;
-        tempEntity.sight += adding.sight;
-        tempEntity.attackSpeed += adding.attackSpeed;
-        tempEntity.max_health_p += adding.max_health_p;
-        tempEntity.stamina_p += adding.stamina_p;
-        tempEntity.armor_p += adding.armor_p;
-        tempEntity.sight_p += adding.sight_p;
-        tempEntity.attackSpeed_p += adding.attackSpeed_p;
-        return tempEntity;
+        EntityStats tempStats(*this);
+        for (std::pair<std::string, int> statPair : adding.stats) {
+            tempStats.stats[statPair.first] += statPair.second;
+        }
+        for (std::pair<std::string, int> statPair : adding.statModifiers) {
+            tempStats.statModifiers[statPair.first] += statPair.second;
+        }
+        return tempStats;
     }
 
     EntityStats EntityStats::operator-(const EntityStats& subtracting) {
-        EntityStats tempEntity = EntityStats(*this);
-        tempEntity.max_health -= subtracting.max_health;
-        tempEntity.health -= subtracting.health;
-        tempEntity.stamina -= subtracting.stamina;
-        tempEntity.armor -= subtracting.armor;
-        tempEntity.moveSpeed -= subtracting.moveSpeed;
-        tempEntity.sight -= subtracting.sight;
-        tempEntity.attackSpeed -= subtracting.attackSpeed;
-        tempEntity.max_health_p -= subtracting.max_health_p;
-        tempEntity.stamina_p -= subtracting.stamina_p;
-        tempEntity.armor_p -= subtracting.armor_p;
-        tempEntity.sight_p -= subtracting.sight_p;
-        tempEntity.attackSpeed_p -= subtracting.attackSpeed_p;
-        return tempEntity;
+        EntityStats tempStats(*this);
+        for (std::pair<std::string, int> statPair : subtracting.stats) {
+            tempStats.stats[statPair.first] -= statPair.second;
+        }
+        for (std::pair<std::string, int> statPair : subtracting.statModifiers) {
+            tempStats.statModifiers[statPair.first] -= statPair.second;
+        }
+        return tempStats;
+    }
+
+    void EntityStats::operator=(const EntityStats& copying) {
+        stats = copying.stats;
+        statModifiers = copying.statModifiers;
     }
 
     void EntityStats::operator+=(const EntityStats& adding) {
-        max_health += adding.max_health;
-        health += adding.health;
-        stamina += adding.stamina;
-        armor += adding.armor;
-        moveSpeed += adding.moveSpeed;
-        sight += adding.sight;
-        attackSpeed += adding.attackSpeed;
-        max_health_p += adding.max_health_p;
-        stamina_p += adding.stamina_p;
-        armor_p += adding.armor_p;
-        sight_p += adding.sight_p;
-        attackSpeed_p += adding.attackSpeed_p;
+        for (std::pair<std::string, int> statPair : adding.stats) {
+            stats[statPair.first] += statPair.second;
+        }
+        for (std::pair<std::string, int> statPair : adding.statModifiers) {
+            statModifiers[statPair.first] += statPair.second;
+        }
     }
 
     void EntityStats::operator-=(const EntityStats& subtracting) {
-        max_health -= subtracting.max_health;
-        health -= subtracting.health;
-        stamina -= subtracting.stamina;
-        armor -= subtracting.armor;
-        moveSpeed -= subtracting.moveSpeed;
-        sight -= subtracting.sight;
-        attackSpeed -= subtracting.attackSpeed;
-        max_health_p -= subtracting.max_health_p;
-        stamina_p -= subtracting.stamina_p;
-        armor_p -= subtracting.armor_p;
-        sight_p -= subtracting.sight_p;
-        attackSpeed_p -= subtracting.attackSpeed_p;
+        for (std::pair<std::string, int> statPair : subtracting.stats) {
+            stats[statPair.first] -= statPair.second;
+        }
+        for (std::pair<std::string, int> statPair : subtracting.statModifiers) {
+            statModifiers[statPair.first] -= statPair.second;
+        }
     }
 
     MovementMods::MovementMods() {
@@ -173,53 +143,12 @@ namespace Game {
 
     }
 
-    Buff::Info::Info() {
-
-    }
-
-    Buff::Info::Info(const Info& info_a, const Buff::Type& type) {
-        switch (type) {
-            case Buff::Type::STATS:
-            statChanges = info_a.statChanges;
-            break;
-            case Buff::Type::MOVEMENT:
-            movementChanges = info_a.movementChanges;
-            break;
-            default:
-            break;
-        }
-    }
-
-    Buff::Buff(const Buff::Info& buffInfo, const Buff::Type& typeInfo, unsigned int frames, unsigned int interval) {
-        info = Info(buffInfo, typeInfo);
-        type = typeInfo;
-        framesMax = frames;
-        framesLeft = frames;
-        frameInterval = interval;
-    }
-
-    Buff::Buff(const Buff& copying) {
-        framesLeft = copying.framesLeft;
-        framesMax = copying.framesMax;
-        frameInterval = copying.frameInterval;
-        info = copying.info;
-        type = copying.type;
-    }
-
-    unsigned int Buff::getFramesLeft() {
+    unsigned int Buff::getFramesLeft() const {
         return framesLeft;
     }
 
-    unsigned int Buff::getMaxFrames() {
+    unsigned int Buff::getMaxFrames() const {
         return framesMax;
-    }
-
-    const Buff::Info& Buff::getInfo() {
-        return info;
-    }
-
-    Buff::Type Buff::getType() {
-        return type;
     }
 
     EntityTemplate::EntityTemplate() {
@@ -285,7 +214,7 @@ namespace Game {
         std::vector<Entity*>& targetableEntities = targeting->isInRange(entities);
         for (std::vector<Entity*>::iterator currentEntity = targetableEntities.begin(); currentEntity != targetableEntities.end(); currentEntity++) {
             EntityStats newStats = EntityStats((*currentEntity)->getBaseStats());
-            newStats.health -= damage;
+            newStats.stats["hp"] -= damage;
             (*currentEntity)->setStats(newStats);
         }
     }
@@ -298,7 +227,7 @@ namespace Game {
         std::vector<Entity*>& targetableEntities = targeting->isInRange(entities);
         for (std::vector<Entity*>::iterator currentEntity = targetableEntities.begin(); currentEntity != targetableEntities.end(); currentEntity++) {
             EntityStats newStats = EntityStats((*currentEntity)->getBaseStats());
-            newStats.health += healAmount;
+            newStats.stats["hp"] += healAmount;
             (*currentEntity)->setStats(newStats);
         }
     }
@@ -335,14 +264,16 @@ namespace Game {
     }
 
     void Entity::move(Vector move_by) {
-        Rect newHitbox = Rect(Vector(hitbox.topLeft.x + move_by.x * getFinalStats().moveSpeed, hitbox.topLeft.y + move_by.y * getFinalStats().moveSpeed), hitbox.width, hitbox.height);
+        int newX = hitbox.topLeft.x + move_by.x * getFinalStats().statModifiers["move"];
+        int newY = hitbox.topLeft.y + move_by.y * getFinalStats().statModifiers["move"];
+        Rect newHitbox = Rect(Vector(newX, newY), hitbox.width, hitbox.height);
         if (ownerMap->entityCanMoveToSpace(id, newHitbox)) {
             hitbox = newHitbox;
         }
     }
 
-    void Entity::addBuff(const Buff& buff) {
-        buffs.push_back(buff);
+    void Entity::addBuff(std::unique_ptr<Buff>& buff) {
+        buffs.push_back(std::move(buff));
     }
 
     const EntityStats& Entity::getBaseStats() {
@@ -355,10 +286,8 @@ namespace Game {
 
     EntityStats Entity::getFinalStats() {
         EntityStats tempStats = EntityStats(baseStats);
-        for (std::vector<Buff>::iterator i = buffs.begin(); i != buffs.end(); i++) {
-            if (i->getType() == Buff::Type::STATS) {
-                tempStats += i->getInfo().statChanges;
-            }
+        for (std::unique_ptr<Buff>& buff : buffs) {
+            buff->apply(tempStats);
         }
         return tempStats;
     }
