@@ -106,6 +106,7 @@ namespace Main {
         fpsText.setFillColor(sf::Color::Yellow);
         fpsText.setOutlineColor(sf::Color::Black);
         fpsText.setPosition(sf::Vector2<float>(0, 0));
+        fpsText.setStyle(sf::Text::Bold);
     }
 
     void GameInstance::initializeGame() {
@@ -184,7 +185,7 @@ namespace Main {
             tickRendering();
 
             if (frameClock.getElapsedTime().asSeconds() < TIME_PER_FRAME) {
-                //sf::sleep(sf::seconds(TIME_PER_FRAME) - frameClock.getElapsedTime());
+                sf::sleep(sf::seconds(TIME_PER_FRAME) - frameClock.getElapsedTime());
             }
             addFrameTimeToAvg(frameClock.getElapsedTime().asSeconds());
         }
