@@ -263,9 +263,18 @@ namespace Game {
         hitbox = newHitbox;
     }
 
-    void Entity::move(const Vector& move_by) {
-        int newX = hitbox.topLeft.x + move_by.x * getFinalStats().statModifiers["move"];
-        int newY = hitbox.topLeft.y + move_by.y * getFinalStats().statModifiers["move"];
+    void Entity::move(const Vector& moveBy) {
+        int newX = hitbox.topLeft.x + moveBy.x * getFinalStats().statModifiers["move"];
+        int newY = hitbox.topLeft.y + moveBy.y * getFinalStats().statModifiers["move"];
+        Rect newHitbox = Rect(Vector(newX, newY), hitbox.width, hitbox.height);
+        if (ownerMap->entityCanMoveToSpace(id, newHitbox)) {
+            hitbox = newHitbox;
+        }
+    }
+
+    void Entity::moveWithoutModifier(const Vector& moveBy) {
+        int newX = hitbox.topLeft.x + moveBy.x;
+        int newY = hitbox.topLeft.y + moveBy.y;
         Rect newHitbox = Rect(Vector(newX, newY), hitbox.width, hitbox.height);
         if (ownerMap->entityCanMoveToSpace(id, newHitbox)) {
             hitbox = newHitbox;
