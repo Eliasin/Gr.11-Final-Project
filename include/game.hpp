@@ -51,7 +51,10 @@ namespace Main {
         void tickGameLogic();
 
         void cullRenderers();
+        void drawBackgrounds();
+        void drawEntities(); 
         void tickRendering();
+
         void tickGame();
     public:
         GameInstance();

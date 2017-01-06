@@ -103,7 +103,8 @@ namespace Main {
 
         fpsText.setFont(fonts["arial"]);
         fpsText.setCharacterSize(32);
-        fpsText.setColor(sf:Color:Yellow);
+        fpsText.setFillColor(sf::Color::Yellow);
+        fpsText.setOutlineColor(sf::Color::Black);
     }
 
     void GameInstance::initializeGame() {
@@ -136,19 +137,29 @@ namespace Main {
         }
     }
 
+    void GameInstance::drawBackgrounds() {
+        for (Rendering::Background background : backgrounds) {
+            background.updateBackgroundSprite();
+            window.draw(background.getSprite());
+        }
+    }
+
+    void GameInstance::drawEntities() {
+        for (Rendering::EntityRenderer& currentRenderer : entityRenderers) {
+            currentRenderer.updateEntitySprite();
+            window.draw(currentRenderer.getSprite());
+        }
+    }
+
     void GameInstance::tickRendering() {
         cullRenderers();
         window.clear(sf::Color::White);
         window.draw(absoluteBackgroundSprite);
         camera.centerOn(map.getEntityWithID(0)->getHitbox().getCenter(), window);
-        for (Rendering::Background background : backgrounds) {
-            background.updateBackgroundSprite();
-            window.draw(background.getSprite());
-        }
-        for (Rendering::EntityRenderer& currentRenderer : entityRenderers) {
-            currentRenderer.updateEntitySprite();
-            window.draw(currentRenderer.getSprite());
-        }
+
+        drawBackgrounds();
+        drawEntities();
+
         window.draw(fpsText);
         window.display();
     }
