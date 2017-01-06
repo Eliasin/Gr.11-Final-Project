@@ -16,6 +16,8 @@ namespace Main {
         sf::Clock frameClock;
         std::list<float> lastFrameTimes;
 
+        std::map<std::string, sf::Font> fonts;
+
         Game::Map map;
         std::map<std::string, Game::EntityTemplate> entityTemplates;
         sf::RenderWindow window;
@@ -34,7 +36,8 @@ namespace Main {
         float getAvgFPS();
 
         void loadTextureSetFromPath(std::string setPath, std::string name);
-        void loadBackgroundTextureFromPath(std::string, std::string name);
+        void loadBackgroundTextureFromPath(std::string path, std::string name);
+        void loadFontFromPath(std::string path, std::string name);
 
         void initializeWindow();
         void initializeTextures();

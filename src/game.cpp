@@ -61,6 +61,13 @@ namespace Main {
         }
     }
 
+    void GameInstance::loadFontFromPath(std::string path, std::string name) {
+        sf::Font font;
+        if (font.loadFromFile("arial.ttf")) {
+            fonts["name"] = font;
+        }
+    }
+
     void GameInstance::initializeTextures() {
         loadTextureSetFromPath("resources/textures/player", "player");
         loadBackgroundTextureFromPath("resources/textures/brick.png", "brick");
