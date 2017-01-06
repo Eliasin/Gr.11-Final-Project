@@ -259,11 +259,11 @@ namespace Game {
         return hitbox;
     }
 
-    void Entity::setHitbox(Rect new_hitbox) {
-        hitbox = new_hitbox;
+    void Entity::setHitbox(const Rect& newHitbox) {
+        hitbox = newHitbox;
     }
 
-    void Entity::move(Vector move_by) {
+    void Entity::move(const Vector& move_by) {
         int newX = hitbox.topLeft.x + move_by.x * getFinalStats().statModifiers["move"];
         int newY = hitbox.topLeft.y + move_by.y * getFinalStats().statModifiers["move"];
         Rect newHitbox = Rect(Vector(newX, newY), hitbox.width, hitbox.height);

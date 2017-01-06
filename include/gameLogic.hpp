@@ -164,8 +164,9 @@ namespace Game {
         Entity(const Entity& entity);
         const unsigned int getID();
         const Rect getHitbox();
-        void setHitbox(Rect new_hitbox);
-        void move(Vector move_by);
+        void setHitbox(const Rect& newHitbox);
+        void move(const Vector& moveByy);
+        void moveWithoutModifier(const Vector& moveBy);
         void addBuff(std::unique_ptr<Buff>& buff);
         const EntityStats& getBaseStats();
         void setStats(const EntityStats& stats);
