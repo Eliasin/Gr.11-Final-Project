@@ -98,7 +98,7 @@ namespace Main {
         absoluteBackgroundSprite.scale(Rendering::scaleSpriteRelativeToWindow(absoluteBackgroundSprite, window, sf::Vector2<float>(1.f, 1.f)));
 
         for (unsigned int i = 0; i < 210; i++) {
-            lastFrameTimes.push_back(FPS_CAP);
+            lastFrameTimes.push_back(TIME_PER_FRAME);
         }
 
         fpsText.setFont(fonts["arial"]);
