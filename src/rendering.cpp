@@ -204,4 +204,26 @@ namespace Rendering {
         return sprite;
     }
 
+    AbsoluteBackground::AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Vector2<float> scale_) {
+        backgroundFrames = backgroundFrames_;
+        currentFrame = 0;
+        tickRenderedFrame();
+        sprite.setScale(scale_);
+    }
+
+    void AbsoluteBackground::tickRenderedFrame() {
+        if (currentFrame < backgroundFrames->size()) {
+            currentFrame++;
+        }
+        currentFrame = 0;
+
+        if (!backgroundFrames->empty()) {
+            sprite.setTexture((*backgroundFrames)[currentFrame]);
+        }
+    }
+
+    const sf::Sprite& AbsoluteBackground::getSprite() {
+        return sprite;
+    }
+
 }

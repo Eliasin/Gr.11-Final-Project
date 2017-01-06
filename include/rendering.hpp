@@ -78,6 +78,16 @@ namespace Rendering {
         const sf::Sprite& getSprite();
     };
 
+    class AbsoluteBackground {
+        std::vector<sf::Texture>* backgroundFrames;
+        sf::Sprite sprite;
+        unsigned int currentFrame;
+    public:
+        AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Vector2<float> scale_);
+        void tickRenderedFrame();
+        const sf::Sprite& getSprite();
+    };
+
     sf::Vector2<float> scaleSpriteRelativeToWindow(const sf::Sprite& sprite, const sf::Window& window, const sf::Vector2<float>& size);
 
 }
