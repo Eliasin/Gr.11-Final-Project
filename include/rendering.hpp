@@ -81,12 +81,14 @@ namespace Rendering {
     class AbsoluteBackground {
         std::vector<sf::Texture>* backgroundFrames;
         sf::Sprite sprite;
+        sf::Window* window;
         unsigned int currentFrame;
         unsigned int frameDelay;
         unsigned int ticksUntilNextFrame;
+        void scaleSprite();
         void nextFrame();
     public:
-        AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Vector2<float> scale_, unsigned int frameDelay_);
+        AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Window* window_, unsigned int frameDelay_);
         void tick();
         const sf::Sprite& getSprite();
     };

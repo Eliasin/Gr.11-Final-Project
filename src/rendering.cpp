@@ -204,13 +204,18 @@ namespace Rendering {
         return sprite;
     }
 
-    AbsoluteBackground::AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Vector2<float> scale_, unsigned int frameDelay_) {
+    AbsoluteBackground::AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Window* window_, unsigned int frameDelay_) {
         backgroundFrames = backgroundFrames_;
         currentFrame = 0;
+        window = window_;
         frameDelay = frameDelay_;
         ticksUntilNextFrame = frameDelay;
         tick();
-        sprite.setScale(scale_);
+        scaleSprite();
+    }
+
+    void AbsoluteBackground::scaleSprite() {
+        sprite.setScale(scaleSpriteRelativeToWindow(sprite, *window, sf::Vector2<float>(1.f, 1.f)));
     }
 
     void AbsoluteBackground::nextFrame() {
@@ -218,6 +223,7 @@ namespace Rendering {
             currentFrame++;
         }
         currentFrame = 0;
+        scaleSprite();
     }
 
     void AbsoluteBackground::tick() {
