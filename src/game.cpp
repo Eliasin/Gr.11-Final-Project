@@ -123,7 +123,7 @@ namespace Main {
         fpsText.setPosition(sf::Vector2<float>(0, 0));
         fpsText.setStyle(sf::Text::Bold);
 
-        absoluteBackground = Rendering::AbsoluteBackground(&absoluteBackgroundTextures["starry"], &window, 30);
+        absoluteBackground = Rendering::AbsoluteBackground(&absoluteBackgroundTextures["starry"], &window, 10);
     }
 
     void GameInstance::initializeGame() {
