@@ -54,14 +54,16 @@ namespace Main {
     }
 
     void GameInstance::loadAbsoluteBackgroundTexturesFromPath(std::string path, std::string name) {
+        std::cout << "Attempting to load " + name + " absolute background texture set." << std::endl;
         std::vector<sf::Texture> textureSet;
         for (unsigned int i = 0;; i++) {
-            std::string filePath = path + std::to_string(i) + ".png";
+            std::string filePath = path + "/" + std::to_string(i) + ".png";
             std::ifstream file(filePath);
             if (file) {
                 sf::Texture texture;
                 texture.loadFromFile(filePath);
                 textureSet.push_back(texture);
+                std::cout << "Loaded " << filePath << " successfully." << std::endl;
             }
             else {
                 break;
@@ -89,6 +91,7 @@ namespace Main {
         loadTextureSetFromPath("resources/textures/player", "player");
         loadBackgroundTextureFromPath("resources/textures/brick.png", "brick");
         loadFontFromPath("resources/fonts/arial.ttf", "arial");
+        loadAbsoluteBackgroundTexturesFromPath("resources/textures/starry", "starry");
     }
 
     void GameInstance::initializeIO() {
