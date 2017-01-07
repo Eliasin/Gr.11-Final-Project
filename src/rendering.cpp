@@ -204,18 +204,30 @@ namespace Rendering {
         return sprite;
     }
 
-    AbsoluteBackground::AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Vector2<float> scale_) {
+    AbsoluteBackground::AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Vector2<float> scale_, unsigned int frameDelay_) {
         backgroundFrames = backgroundFrames_;
         currentFrame = 0;
-        tickRenderedFrame();
+        frameDelay = frameDelay_;
+        ticksUntilNextFrame = frameDelay;
+        tick();
         sprite.setScale(scale_);
     }
 
-    void AbsoluteBackground::tickRenderedFrame() {
+    void AbsoluteBackground::nextFrame() {
         if (currentFrame < backgroundFrames->size()) {
             currentFrame++;
         }
         currentFrame = 0;
+    }
+
+    void AbsoluteBackground::tick() {
+        if (ticksUntilNextFrame > 0) {
+            ticksUntilNextFrame--;
+        }
+        else {
+            nextFrame();
+            ticksUntilNextFrame = frameDelay;
+        }
 
         if (!backgroundFrames->empty()) {
             sprite.setTexture((*backgroundFrames)[currentFrame]);

@@ -82,9 +82,12 @@ namespace Rendering {
         std::vector<sf::Texture>* backgroundFrames;
         sf::Sprite sprite;
         unsigned int currentFrame;
+        unsigned int frameDelay;
+        unsigned int ticksUntilNextFrame;
+        void nextFrame();
     public:
-        AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Vector2<float> scale_);
-        void tickRenderedFrame();
+        AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Vector2<float> scale_, unsigned int frameDelay_);
+        void tick();
         const sf::Sprite& getSprite();
     };
 
