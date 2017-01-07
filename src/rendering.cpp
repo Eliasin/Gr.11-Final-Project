@@ -204,14 +204,40 @@ namespace Rendering {
         return sprite;
     }
 
+    AbsoluteBackground::AbsoluteBackground() {
+        backgroundFrames = NULL;
+        currentFrame = 0;
+        window = NULL;
+        frameDelay = 1;
+        ticksSinceFrameChange = 0;
+    }
+
+    AbsoluteBackground::AbsoluteBackground(const AbsoluteBackground& copying) {
+        backgroundFrames = copying.backgroundFrames;
+        currentFrame = copying.currentFrame;
+        window = copying.window;
+        frameDelay = copying.frameDelay;
+        ticksSinceFrameChange = copying.ticksSinceFrameChange;
+    }
+
     AbsoluteBackground::AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Window* window_, unsigned int frameDelay_) {
         backgroundFrames = backgroundFrames_;
         currentFrame = 0;
         window = window_;
         frameDelay = frameDelay_;
-        ticksUntilNextFrame = frameDelay;
-        tick();
-        scaleSprite();
+        ticksSinceFrameChange = 0;
+    }
+
+    void AbsoluteBackground::setTextureSet(std::vector<sf::Texture>* backgroundFrames_) {
+        backgroundFrames = backgroundFrames_;
+    }
+
+    void AbsoluteBackground::setWindow(sf::Window* window_) {
+        window = window_;
+    }
+
+    void AbsoluteBackground::setFrameDelay(unsigned int frameDelay_) {
+        frameDelay = frameDelay_;
     }
 
     void AbsoluteBackground::scaleSprite() {
@@ -219,24 +245,26 @@ namespace Rendering {
     }
 
     void AbsoluteBackground::nextFrame() {
-        if (currentFrame < backgroundFrames->size()) {
+        if (currentFrame < backgroundFrames->size() - 1) {
             currentFrame++;
         }
-        currentFrame = 0;
-        scaleSprite();
+        else {
+            currentFrame = 0;
+        }
     }
 
     void AbsoluteBackground::tick() {
-        if (ticksUntilNextFrame > 0) {
-            ticksUntilNextFrame--;
+        if (ticksSinceFrameChange < frameDelay) {
+            ticksSinceFrameChange++;
         }
         else {
             nextFrame();
-            ticksUntilNextFrame = frameDelay;
+            ticksSinceFrameChange = 0;
         }
 
         if (!backgroundFrames->empty()) {
             sprite.setTexture((*backgroundFrames)[currentFrame]);
+            scaleSprite();
         }
     }
 

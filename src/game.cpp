@@ -122,6 +122,8 @@ namespace Main {
         fpsText.setOutlineColor(sf::Color::Black);
         fpsText.setPosition(sf::Vector2<float>(0, 0));
         fpsText.setStyle(sf::Text::Bold);
+
+        absoluteBackground = Rendering::AbsoluteBackground(&absoluteBackgroundTextures["starry"], &window, 30);
     }
 
     void GameInstance::initializeGame() {
@@ -177,6 +179,9 @@ namespace Main {
         window.clear(sf::Color::White);
 
         camera.centerOn(map.getEntityWithID(0)->getHitbox().getCenter(), window);
+
+        absoluteBackground.tick();
+        window.draw(absoluteBackground.getSprite());
 
         drawBackgrounds();
         drawEntities();

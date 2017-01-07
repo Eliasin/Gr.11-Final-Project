@@ -84,11 +84,16 @@ namespace Rendering {
         sf::Window* window;
         unsigned int currentFrame;
         unsigned int frameDelay;
-        unsigned int ticksUntilNextFrame;
+        unsigned int ticksSinceFrameChange;
         void scaleSprite();
         void nextFrame();
     public:
+        AbsoluteBackground();
+        AbsoluteBackground(const AbsoluteBackground& copying);
         AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Window* window_, unsigned int frameDelay_);
+        void setTextureSet(std::vector<sf::Texture>* backgroundFrames_);
+        void setWindow(sf::Window* window_);
+        void setFrameDelay(unsigned int frameDelay_);
         void tick();
         const sf::Sprite& getSprite();
     };

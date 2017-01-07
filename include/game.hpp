@@ -30,6 +30,7 @@ namespace Main {
         Rendering::Camera camera;
         std::vector<IO::KeyHandler*> keyHandlers;
         std::map<std::string, std::vector<sf::Texture>> absoluteBackgroundTextures;
+        Rendering::AbsoluteBackground absoluteBackground;
 
         bool exitGame;
 
