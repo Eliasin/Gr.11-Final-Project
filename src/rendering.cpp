@@ -210,6 +210,8 @@ namespace Rendering {
         window = NULL;
         frameDelay = 1;
         ticksSinceFrameChange = 0;
+        looping = false;
+        frameAscending = true;
     }
 
     AbsoluteBackground::AbsoluteBackground(const AbsoluteBackground& copying) {
@@ -218,6 +220,8 @@ namespace Rendering {
         window = copying.window;
         frameDelay = copying.frameDelay;
         ticksSinceFrameChange = copying.ticksSinceFrameChange;
+        looping = copying.looping;
+        frameAscending = copying.frameAscending;
     }
 
     AbsoluteBackground::AbsoluteBackground(std::vector<sf::Texture>* backgroundFrames_, sf::Window* window_, unsigned int frameDelay_) {
@@ -226,6 +230,8 @@ namespace Rendering {
         window = window_;
         frameDelay = frameDelay_;
         ticksSinceFrameChange = 0;
+        looping = false;
+        frameAscending = true;
     }
 
     void AbsoluteBackground::setTextureSet(std::vector<sf::Texture>* backgroundFrames_) {
@@ -240,8 +246,21 @@ namespace Rendering {
         frameDelay = frameDelay_;
     }
 
+    void AbsoluteBackground::setLooping(bool looping_) {
+        looping = looping_;
+    }
+
     void AbsoluteBackground::scaleSprite() {
         sprite.setScale(scaleSpriteRelativeToWindow(sprite, *window, sf::Vector2<float>(1.f, 1.f)));
+    }
+
+    void AbsoluteBackground::changeFrame() {
+        if (looping) {
+            nextFrameLooping();
+        }
+        else {
+            nextFrame();
+        }
     }
 
     void AbsoluteBackground::nextFrame() {
@@ -253,12 +272,31 @@ namespace Rendering {
         }
     }
 
+    void AbsoluteBackground::nextFrameLooping() {
+        if (frameAscending) {
+            if (currentFrame < backgroundFrames->size() - 1) {
+                currentFrame++;
+            }
+            else {
+                frameAscending = false;
+            }
+        }
+        else {
+            if (currentFrame > 0) {
+                currentFrame--;
+            }
+            else {
+                frameAscending = true;
+            }
+        }
+    }
+
     void AbsoluteBackground::tick() {
         if (ticksSinceFrameChange < frameDelay) {
             ticksSinceFrameChange++;
         }
         else {
-            nextFrame();
+            changeFrame();
             ticksSinceFrameChange = 0;
         }
 

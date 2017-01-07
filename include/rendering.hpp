@@ -85,8 +85,12 @@ namespace Rendering {
         unsigned int currentFrame;
         unsigned int frameDelay;
         unsigned int ticksSinceFrameChange;
+        bool looping;
+        bool frameAscending;
         void scaleSprite();
+        void changeFrame();
         void nextFrame();
+        void nextFrameLooping();
     public:
         AbsoluteBackground();
         AbsoluteBackground(const AbsoluteBackground& copying);
@@ -94,6 +98,7 @@ namespace Rendering {
         void setTextureSet(std::vector<sf::Texture>* backgroundFrames_);
         void setWindow(sf::Window* window_);
         void setFrameDelay(unsigned int frameDelay_);
+        void setLooping(bool looping_);
         void tick();
         const sf::Sprite& getSprite();
     };

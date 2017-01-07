@@ -124,6 +124,7 @@ namespace Main {
         fpsText.setStyle(sf::Text::Bold);
 
         absoluteBackground = Rendering::AbsoluteBackground(&absoluteBackgroundTextures["starry"], &window, 10);
+        absoluteBackground.setLooping(true);
     }
 
     void GameInstance::initializeGame() {
