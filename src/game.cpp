@@ -102,9 +102,15 @@ namespace Main {
     void GameInstance::initializeGameLogic() {
         Game::EntityStats defaultStats;
         Game::Rect defaultHitbox(Game::Vector(0, 0), 100, 100);
+
+        Game::Rect testDummyHitbox(Game::Vector(100, 100), 100, 100);
+
         entityTemplates["player"] = Game::EntityTemplate(defaultStats, defaultHitbox, NULL);
-        map.createEntity(entityTemplates["player"]);
+        entityTemplates["testDummy"] = Game::EntityTemplate(defaultStats, testDummyHitbox, NULL);
+
         map.setPlayableArea(Game::Rect(Game::Vector(-2000, -2000), 4000, 4000));
+        map.createEntity(entityTemplates["player"]);
+        map.createEntity(entityTemplates["testDummy"]);
     }
 
     void GameInstance::initializeRendering() {
@@ -125,6 +131,9 @@ namespace Main {
 
         absoluteBackground = Rendering::AbsoluteBackground(&absoluteBackgroundTextures["starry"], &window, 10);
         absoluteBackground.setLooping(true);
+
+        entityRenderers.push_back(Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 1), &camera, &window, &textureSets["player"]));
+
     }
 
     void GameInstance::initializeGame() {
