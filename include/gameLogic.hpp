@@ -107,6 +107,44 @@ namespace Game {
         std::vector<unsigned int> isInRange(const std::vector<unsigned int>& entities, Map* map) override;
     };
 
+    class Team {
+    protected:
+        bool validEntity(unsigned int entityID, Map* map) const;
+    public:
+        enum class TEAM {
+            PLAYER,
+            ENEMY,
+            TERRAIN
+        };
+        virtual std::vector<unsigned int> canBeHit(const std::vector<unsigned int>& entities, Map* map) const =0;
+        virtual std::vector<unsigned int> canBeHealed(const std::vector<unsigned int>& entities, Map* map) const=0;
+        virtual std::vector<unsigned int> canBeDisplaced(const std::vector<unsigned int>& entities, Map* map) const =0;
+    };
+
+    class PlayerTeam : public Team {
+    public:
+        static const PlayerTeam PLAYER_TEAM;
+        virtual std::vector<unsigned int> canBeHit(const std::vector<unsigned int>& entities, Map* map) const override;
+        virtual std::vector<unsigned int> canBeHealed(const std::vector<unsigned int>& entities, Map* map) const override;
+        virtual std::vector<unsigned int> canBeDisplaced(const std::vector<unsigned int>& entities, Map* map) const override;
+    };
+
+    class EnemyTeam : public Team {
+    public:
+        static const EnemyTeam ENEMY_TEAM;
+        virtual std::vector<unsigned int> canBeHit(const std::vector<unsigned int>& entities, Map* map) const override;
+        virtual std::vector<unsigned int> canBeHealed(const std::vector<unsigned int>& entities, Map* map) const override;
+        virtual std::vector<unsigned int> canBeDisplaced(const std::vector<unsigned int>& entities, Map* map) const override;
+    };
+
+    class TerrainTeam : public Team {
+    public:
+        static const TerrainTeam TERRAIN_TEAM;
+        virtual std::vector<unsigned int> canBeHit(const std::vector<unsigned int>& entities, Map* map) const override;
+        virtual std::vector<unsigned int> canBeHealed(const std::vector<unsigned int>& entities, Map* map) const override;
+        virtual std::vector<unsigned int> canBeDisplaced(const std::vector<unsigned int>& entities, Map* map) const override;
+    };
+
     class Action {
     protected:
         unsigned int frameWait;
@@ -166,6 +204,7 @@ namespace Game {
         EntityStats baseStats;
         BehaviourProfile* behaviourProfile;
         Map* ownerMap;
+        Team::TEAM team;
         Entity(const EntityTemplate& entityTemplate, unsigned int id_, Map* owner);
     public:
         Entity(const Entity& entity);
@@ -179,6 +218,8 @@ namespace Game {
         void setStats(const EntityStats& stats);
         EntityStats getFinalStats();
         EntityTemplate getState();
+        Team::TEAM getTeam();
+        void setTeam(Team::TEAM team_);
     };
 
 }

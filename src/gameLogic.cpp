@@ -228,6 +228,82 @@ namespace Game {
         return entitiesInRange;
     }
 
+    bool Team::validEntity(unsigned int entityID, Map* map) const {
+        return map && map->getEntityWithID(entityID);
+    }
+
+    std::vector<unsigned int> PlayerTeam::canBeHit(const std::vector<unsigned int>& entities, Map* map) const {
+        std::vector<unsigned int> canBeHitEntities;
+        for (unsigned int entityID : entities) {
+            if (validEntity(entityID, map) && map->getEntityWithID(entityID)->getTeam() == Team::TEAM::ENEMY) {
+                canBeHitEntities.push_back(entityID);
+            }
+        }
+        return canBeHitEntities;
+    }
+
+    std::vector<unsigned int> PlayerTeam::canBeHealed(const std::vector<unsigned int>& entities, Map* map) const {
+        std::vector<unsigned int> canBeHealedEntities;
+        for (unsigned int entityID : entities) {
+            if (validEntity(entityID, map) && map->getEntityWithID(entityID)->getTeam() == Team::TEAM::PLAYER) {
+                canBeHealedEntities.push_back(entityID);
+            }
+        }
+        return canBeHealedEntities;
+    }
+
+    std::vector<unsigned int> PlayerTeam::canBeDisplaced(const std::vector<unsigned int>& entities, Map* map) const {
+        std::vector<unsigned int> canBeDisplacedEntities;
+        for (unsigned int entityID : entities) {
+            if (validEntity(entityID, map) && map->getEntityWithID(entityID)->getTeam() == Team::TEAM::ENEMY) {
+                canBeDisplacedEntities.push_back(entityID);
+            }
+        }
+        return canBeDisplacedEntities;
+    }
+
+    std::vector<unsigned int> EnemyTeam::canBeHit(const std::vector<unsigned int>& entities, Map* map) const {
+        std::vector<unsigned int> canBeHitEntities;
+        for (unsigned int entityID : entities) {
+            if (validEntity(entityID, map) && map->getEntityWithID(entityID)->getTeam() == Team::TEAM::PLAYER) {
+                canBeHitEntities.push_back(entityID);
+            }
+        }
+        return canBeHitEntities;
+    }
+
+    std::vector<unsigned int> EnemyTeam::canBeHealed(const std::vector<unsigned int>& entities, Map* map) const {
+        std::vector<unsigned int> canBeHealedEntities;
+        for (unsigned int entityID : entities) {
+            if (validEntity(entityID, map) && map->getEntityWithID(entityID)->getTeam() == Team::TEAM::ENEMY) {
+                canBeHealedEntities.push_back(entityID);
+            }
+        }
+        return canBeHealedEntities;
+    }
+
+    std::vector<unsigned int> EnemyTeam::canBeDisplaced(const std::vector<unsigned int>& entities, Map* map) const {
+        std::vector<unsigned int> canBeDisplacedEntities;
+        for (unsigned int entityID : entities) {
+            if (validEntity(entityID, map) && map->getEntityWithID(entityID)->getTeam() == Team::TEAM::PLAYER) {
+                canBeDisplacedEntities.push_back(entityID);
+            }
+        }
+        return canBeDisplacedEntities;
+    }
+
+    std::vector<unsigned int> TerrainTeam::canBeHit(const std::vector<unsigned int>& entities, Map* map) const {
+        return entities;
+    }
+
+    std::vector<unsigned int> TerrainTeam::canBeHealed(const std::vector<unsigned int>& entities, Map* map) const {
+        return std::vector<unsigned int>();
+    }
+
+    std::vector<unsigned int> TerrainTeam::canBeDisplaced(const std::vector<unsigned int>& entities, Map* map) const {
+        return entities;
+    }
+
     unsigned int Action::getFrameWait() {
         return frameWait;
     }
@@ -348,6 +424,14 @@ namespace Game {
         returnTemplate.hitbox = hitbox;
         returnTemplate.behaviourProfile = behaviourProfile;
         return returnTemplate;
+    }
+
+    Team::TEAM Entity::getTeam() {
+        return team;
+    }
+
+    void Entity::setTeam(Team::TEAM team_) {
+        team = team_;
     }
 
     void Map::addActionToQueue(Action* action) {
