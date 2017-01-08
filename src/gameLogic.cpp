@@ -202,16 +202,15 @@ namespace Game {
 
     }
 
-    std::vector<Entity*>& NoTargeting::isInRange(std::vector<Entity*>& entities) {
-        entities.clear();
-        return entities;
+    std::vector<unsigned int> NoTargeting::isInRange(const std::vector<unsigned int>& entities, Map* map) {
+        return std::vector<unsigned int>();
     }
 
     AllTargeting::AllTargeting() {
 
     }
 
-    std::vector<Entity*>& AllTargeting::isInRange(std::vector<Entity*>& entities) {
+    std::vector<unsigned int> AllTargeting::isInRange(const std::vector<unsigned int>& entities, Map* map) {
         return entities;
     }
 
@@ -219,13 +218,14 @@ namespace Game {
         rect = rect_;
     }
 
-    std::vector<Entity*>& RectTargeting::isInRange(std::vector<Entity*>& entities) {
-        for (std::vector<Entity*>::iterator currentEntity = entities.begin(); currentEntity != entities.begin(); currentEntity++) {
-            if (!rect.intersects((*currentEntity)->getHitbox())) {
-                currentEntity = entities.erase(currentEntity);
+    std::vector<unsigned int> RectTargeting::isInRange(const std::vector<unsigned int>& entities, Map* map) {
+        std::vector<unsigned int> entitiesInRange;
+        for (unsigned int entityID : entities) {
+            if (map && map->getEntityWithID(entityID) && map->getEntityWithID(entityID)->getHitbox().intersects(rect)) {
+                entitiesInRange.push_back(entityID);
             }
         }
-        return entities;
+        return entitiesInRange;
     }
 
     unsigned int Action::getFrameWait() {
@@ -236,40 +236,51 @@ namespace Game {
         frameWait -= 1;
     }
 
-    HitAction::HitAction(unsigned int damage_) {
+    HitAction::HitAction(unsigned int damage_, Map* ownerMap_) {
         damage = damage_;
+        ownerMap = ownerMap_;
     }
 
-    void HitAction::applyAction(std::vector<Entity*>& entities) {
-        std::vector<Entity*>& targetableEntities = targeting->isInRange(entities);
-        for (std::vector<Entity*>::iterator currentEntity = targetableEntities.begin(); currentEntity != targetableEntities.end(); currentEntity++) {
-            EntityStats newStats = EntityStats((*currentEntity)->getBaseStats());
-            newStats.stats["hp"] -= damage;
-            (*currentEntity)->setStats(newStats);
+    void HitAction::applyAction(const std::vector<unsigned int>& entities) {
+        std::vector<unsigned int> targetableEntities = targeting->isInRange(entities, ownerMap);
+        for (unsigned int entityID : targetableEntities) {
+            if (ownerMap && ownerMap->getEntityWithID(entityID)) {
+                Entity* entity = ownerMap->getEntityWithID(entityID);
+                EntityStats newStats = entity->getBaseStats();
+                newStats.stats["hp"] -= damage;
+                entity->setStats(newStats);
+            }
         }
     }
 
-    HealAction::HealAction(unsigned int healAmount_) {
+    HealAction::HealAction(unsigned int healAmount_, Map* ownerMap_) {
         healAmount = healAmount_;
+        ownerMap = ownerMap_;
     }
 
-    void HealAction::applyAction(std::vector<Entity*>& entities) {
-        std::vector<Entity*>& targetableEntities = targeting->isInRange(entities);
-        for (std::vector<Entity*>::iterator currentEntity = targetableEntities.begin(); currentEntity != targetableEntities.end(); currentEntity++) {
-            EntityStats newStats = EntityStats((*currentEntity)->getBaseStats());
-            newStats.stats["hp"] += healAmount;
-            (*currentEntity)->setStats(newStats);
+    void HealAction::applyAction(const std::vector<unsigned int>& entities) {
+        std::vector<unsigned int> targetableEntities = targeting->isInRange(entities, ownerMap);
+        for (unsigned int entityID : targetableEntities) {
+            if (ownerMap && ownerMap->getEntityWithID(entityID)) {
+                Entity* entity = ownerMap->getEntityWithID(entityID);
+                EntityStats newStats = entity->getBaseStats();
+                newStats.stats["hp"] += healAmount;
+                entity->setStats(newStats);
+            }
         }
     }
 
-    DisplacementAction::DisplacementAction(const Vector& displaceBy_) {
+    DisplacementAction::DisplacementAction(const Vector& displaceBy_, Map* ownerMap_) {
         displaceBy = displaceBy_;
+        ownerMap = ownerMap_;
     }
 
-    void DisplacementAction::applyAction(std::vector<Entity*>& entities) {
-        std::vector<Entity*>& targetableEntities = targeting->isInRange(entities);
-        for (std::vector<Entity*>::iterator currentEntity = targetableEntities.begin(); currentEntity != targetableEntities.end(); currentEntity++) {
-            (*currentEntity)->move(displaceBy);
+    void DisplacementAction::applyAction(const std::vector<unsigned int>& entities) {
+        std::vector<unsigned int> targetableEntities = targeting->isInRange(entities, ownerMap);
+        for (unsigned int entityID : targetableEntities) {
+            if (ownerMap && ownerMap->getEntityWithID(entityID)) {
+                ownerMap->getEntityWithID(entityID)->moveWithoutModifier(displaceBy);
+            }
         }
     }
 

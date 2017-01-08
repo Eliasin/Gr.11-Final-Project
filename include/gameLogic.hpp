@@ -7,6 +7,7 @@
 
 namespace Game {
     class Entity;
+    class Map;
 
     struct Vector {
         int x,y;
@@ -84,32 +85,33 @@ namespace Game {
 
     class Targeting {
     public:
-        virtual std::vector<Entity*>& isInRange(std::vector<Entity*>& entities)=0;
+        virtual std::vector<unsigned int> isInRange(const std::vector<unsigned int>& entities, Map* map)=0;
     };
 
     class NoTargeting : public Targeting {
     public:
         NoTargeting();
-        std::vector<Entity*>& isInRange(std::vector<Entity*>& entities);
+        std::vector<unsigned int> isInRange(const std::vector<unsigned int>& entities, Map* map) override;
     };
 
     class AllTargeting : public Targeting {
     public:
         AllTargeting();
-        std::vector<Entity*>& isInRange(std::vector<Entity*>& entities);
+        std::vector<unsigned int> isInRange(const std::vector<unsigned int>& entities, Map* map) override;
     };
 
     class RectTargeting : public Targeting {
         Rect rect;
     public:
         RectTargeting(const Rect& rect_);
-        std::vector<Entity*>& isInRange(std::vector<Entity*>& entities);
+        std::vector<unsigned int> isInRange(const std::vector<unsigned int>& entities, Map* map) override;
     };
 
     class Action {
     protected:
         unsigned int frameWait;
         Targeting* targeting;
+        Map* ownerMap;
     public:
         void setTargeting(Targeting* targeting);
         unsigned int getFrameWait();
@@ -120,21 +122,21 @@ namespace Game {
     class HitAction : public Action {
         unsigned int damage;
     public:
-        HitAction(unsigned int damage_);
-        void applyAction(std::vector<Entity*>& entities);
+        HitAction(unsigned int damage_, Map* ownerMap_);
+        void applyAction(const std::vector<unsigned int>& entities);
     };
 
     class HealAction : public Action {
         unsigned int healAmount;
     public:
-        HealAction(unsigned int healAmount_);
-        void applyAction(std::vector<Entity*>& entities);
+        HealAction(unsigned int healAmount_, Map* ownerMap_);
+        void applyAction(const std::vector<unsigned int>& entities);
     };
 
     class DisplacementAction : public Action {
         Vector displaceBy;
-        DisplacementAction(const Vector& displaceBy_);
-        void applyAction(std::vector<Entity*>& entities);
+        DisplacementAction(const Vector& displaceBy_, Map* ownerMap_);
+        void applyAction(const std::vector<unsigned int>& entities);
     };
 
     class Map {
