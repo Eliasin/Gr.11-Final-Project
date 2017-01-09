@@ -23,7 +23,7 @@ namespace Main {
         Game::Map map;
         std::map<std::string, Game::EntityTemplate> entityTemplates;
         sf::RenderWindow window;
-        std::map<std::string, std::map<std::string, sf::Texture>> textureSets;
+        std::map<std::string, std::map<std::string, std::vector<sf::Texture>>> textureSets;
         std::vector<Rendering::EntityRenderer> entityRenderers;
         std::vector<Rendering::Background> backgrounds;
         std::map<std::string, sf::Texture> backgroundTextures;

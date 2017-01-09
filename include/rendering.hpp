@@ -44,20 +44,26 @@ namespace Rendering {
     class EntityRenderer {
         static const std::map<EntityEventParser::STATE, std::string> stateToTextureName;
         sf::Sprite sprite;
-        std::map<std::string, sf::Texture>* textureSet;
+        std::map<std::string, std::vector<sf::Texture>>* textureSet;
+        std::vector<sf::Texture>* currentTextureSet;
         EntityEventParser entityEventParser;
         Camera* camera;
         sf::Window* window;
         EntityEventParser::STATE lastState;
 
+        unsigned int currentFrame;
+        unsigned int frameDelay;
+        unsigned int ticksSinceFrameChange;
+
         void scaleSprite();
         void positionSprite();
         void updateSpriteTexture();
-
-        void initializeSprite();
+        void tickCurrentAnim();
+        void switchAnim(EntityEventParser::STATE newState);
+        void tickFrameDelayCounter();
     public:
         static const std::vector<std::string> stateTextureNames;
-        EntityRenderer(const EntityEventParser& entityEventParser_, Rendering::Camera* camera_, sf::Window* window, std::map<std::string, sf::Texture >* textureSet_);
+        EntityRenderer(const EntityEventParser& entityEventParser_, Rendering::Camera* camera_, sf::Window* window, std::map<std::string, std::vector<sf::Texture>>* textureSet_, unsigned int frameDelay);
         void updateEntitySprite();
         void setCamera(Camera* camera_);
         const EntityEventParser& getEntityEventParser();

@@ -122,17 +122,16 @@ namespace Rendering {
 
     const std::map <EntityEventParser::STATE, std::string> EntityRenderer::stateToTextureName = { {EntityEventParser::STATE::HIT, "hit"}, {EntityEventParser::STATE::IDLE, "idle"} };
 
-    void EntityRenderer::initializeSprite() {
-        sprite.setTexture((*textureSet)["idle"]);
-    }
-
-    EntityRenderer::EntityRenderer(const EntityEventParser& entityEventParser_, Rendering::Camera* camera_, sf::Window* window_, std::map<std::string, sf::Texture>* textureSet_) {
+    EntityRenderer::EntityRenderer(const EntityEventParser& entityEventParser_, Rendering::Camera* camera_, sf::Window* window_, std::map<std::string, std::vector<sf::Texture>>* textureSet_, unsigned int frameDelay_) {
         entityEventParser = EntityEventParser(entityEventParser_);
         camera = camera_;
         textureSet = textureSet_;
         window = window_;
         lastState = EntityEventParser::STATE::IDLE;
-        sprite.setTexture((*textureSet)["idle"]);
+        currentTextureSet = &(*textureSet)["idle"];
+        frameDelay = frameDelay_;
+        currentFrame = 0;
+        ticksSinceFrameChange = 0;
         scaleSprite();
     }
 
@@ -148,12 +147,40 @@ namespace Rendering {
         sprite.setPosition(position);
     }
 
+    void EntityRenderer::switchAnim(EntityEventParser::STATE newState) {
+        currentTextureSet = &(*textureSet)[stateToTextureName.find(newState)->second];
+        currentFrame = 0;
+        ticksSinceFrameChange = 0;
+    }
+
+    void EntityRenderer::tickCurrentAnim() {
+        if (currentFrame < currentTextureSet->size() - 1) {
+            currentFrame++;
+        }
+        else {
+            switchAnim(EntityEventParser::STATE::IDLE);
+        }
+        sprite.setTexture((*currentTextureSet)[currentFrame]);
+        scaleSprite();
+    }
+
+    void EntityRenderer::tickFrameDelayCounter() {
+        ticksSinceFrameChange++;
+        if (ticksSinceFrameChange > frameDelay) {
+            tickCurrentAnim();
+            ticksSinceFrameChange = 0;
+        }
+    }
+
     void EntityRenderer::updateSpriteTexture() {
         EntityEventParser::STATE entityState = entityEventParser.getEntityState();
         if (lastState != entityState) {
-            std::string textureName = stateToTextureName.find(entityState)->second;
-            sprite.setTexture(textureSet->find(textureName)->second);
+            switchAnim(entityState);
         }
+        else {
+            tickFrameDelayCounter();
+        }
+        lastState = entityState;
     }
 
     void EntityRenderer::updateEntitySprite() {

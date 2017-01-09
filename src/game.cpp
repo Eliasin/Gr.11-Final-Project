@@ -7,7 +7,7 @@ namespace Main {
         map = Game::Map();
         entityTemplates = std::map<std::string, Game::EntityTemplate>();
         sf::RenderWindow window;
-        textureSets = std::map<std::string, std::map<std::string, sf::Texture>>();
+        textureSets = std::map<std::string, std::map<std::string, std::vector<sf::Texture>>>();
         entityRenderers = std::vector<Rendering::EntityRenderer>();
         backgrounds = std::vector<Rendering::Background>();
         backgroundTextures = std::map<std::string, sf::Texture>();
@@ -37,18 +37,23 @@ namespace Main {
     }
 
     void GameInstance::loadTextureSetFromPath(std::string setPath, std::string name) {
-        std::map<std::string, sf::Texture> textureSet;
+        std::map<std::string, std::vector<sf::Texture>> textureSet;
         for (std::string currentState : Rendering::EntityRenderer::stateTextureNames) {
-            sf::Texture texture;
-            std::cout << "Attempting to load " << setPath + "/" + currentState + ".png" << std::endl;
-            if (!texture.loadFromFile(setPath + "/"  + currentState + ".png")) {
-                texture.loadFromFile(setPath + "/idle.png");
+            std::vector<sf::Texture> frameSet;
+            for (unsigned int i = 0;; i++) {
+                std::string fileName = setPath + "/"  + currentState + "/" + std::to_string(i) + ".png";
+                std::ifstream file(fileName);
+                if (file) {
+                    sf::Texture texture;
+                    texture.loadFromFile(fileName);
+                    frameSet.push_back(texture);
+                    std::cout << "Loaded " << fileName << " successfully." << std::endl;
+                }
+                else {
+                    break;
+                }
             }
-            else {
-                std::cout << "Loaded " << setPath + "/" + currentState + ".png" << " successfully." << std::endl;
-            }
-
-            textureSet[currentState] = texture;
+            textureSet[currentState] = frameSet;
         }
         textureSets[name] = textureSet;
     }
@@ -115,7 +120,7 @@ namespace Main {
 
     void GameInstance::initializeRendering() {
         camera.setViewBox(Game::Rect(Game::Vector(0, 0), 1920, 1080));
-        Rendering::EntityRenderer playerRenderer = Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 0), &camera, &window, &textureSets["player"]);
+        Rendering::EntityRenderer playerRenderer = Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 0), &camera, &window, &textureSets["player"], 30);
         entityRenderers.push_back(playerRenderer);
         backgrounds.push_back(Rendering::Background(&backgroundTextures["brick"], &camera, &window, Game::Rect(Game::Vector(-2000, -2000), 4000, 4000)));
         for (unsigned int i = 0; i < 210; i++) {
@@ -132,7 +137,7 @@ namespace Main {
         absoluteBackground = Rendering::AbsoluteBackground(&absoluteBackgroundTextures["starry"], &window, 10);
         absoluteBackground.setLooping(true);
 
-        entityRenderers.push_back(Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 1), &camera, &window, &textureSets["player"]));
+        entityRenderers.push_back(Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 1), &camera, &window, &textureSets["player"], 30));
 
     }
 
