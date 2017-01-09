@@ -312,9 +312,11 @@ namespace Game {
         frameWait -= 1;
     }
 
-    HitAction::HitAction(unsigned int damage_, Map* ownerMap_) {
+    HitAction::HitAction(unsigned int damage_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_) {
         damage = damage_;
         ownerMap = ownerMap_;
+        targeting = targeting_;
+        teamChecker = teamChecker_;
     }
 
     void HitAction::applyAction(const std::vector<unsigned int>& entities) {
@@ -329,9 +331,11 @@ namespace Game {
         }
     }
 
-    HealAction::HealAction(unsigned int healAmount_, Map* ownerMap_) {
+    HealAction::HealAction(unsigned int healAmount_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_) {
         healAmount = healAmount_;
         ownerMap = ownerMap_;
+        targeting = targeting_;
+        teamChecker = teamChecker_;
     }
 
     void HealAction::applyAction(const std::vector<unsigned int>& entities) {
@@ -346,9 +350,11 @@ namespace Game {
         }
     }
 
-    DisplacementAction::DisplacementAction(const Vector& displaceBy_, Map* ownerMap_) {
+    DisplacementAction::DisplacementAction(const Vector& displaceBy_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_) {
         displaceBy = displaceBy_;
         ownerMap = ownerMap_;
+        targeting = targeting_;
+        teamChecker = teamChecker_;
     }
 
     void DisplacementAction::applyAction(const std::vector<unsigned int>& entities) {

@@ -149,6 +149,7 @@ namespace Game {
     protected:
         unsigned int frameWait;
         Targeting* targeting;
+        Team* teamChecker;
         Map* ownerMap;
     public:
         void setTargeting(Targeting* targeting);
@@ -160,20 +161,20 @@ namespace Game {
     class HitAction : public Action {
         unsigned int damage;
     public:
-        HitAction(unsigned int damage_, Map* ownerMap_);
+        HitAction(unsigned int damage_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_);
         void applyAction(const std::vector<unsigned int>& entities);
     };
 
     class HealAction : public Action {
         unsigned int healAmount;
     public:
-        HealAction(unsigned int healAmount_, Map* ownerMap_);
+        HealAction(unsigned int healAmount_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_);
         void applyAction(const std::vector<unsigned int>& entities);
     };
 
     class DisplacementAction : public Action {
         Vector displaceBy;
-        DisplacementAction(const Vector& displaceBy_, Map* ownerMap_);
+        DisplacementAction(const Vector& displaceBy_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_);
         void applyAction(const std::vector<unsigned int>& entities);
     };
 
