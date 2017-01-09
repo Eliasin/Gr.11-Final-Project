@@ -39,6 +39,7 @@ namespace Main {
     void GameInstance::loadTextureSetFromPath(std::string setPath, std::string name) {
         std::map<std::string, std::vector<sf::Texture>> textureSet;
         for (std::string currentState : Rendering::EntityRenderer::stateTextureNames) {
+            std::cout << "Attempting to load " << name + " " + currentState + " texture set." << std::endl;
             std::vector<sf::Texture> frameSet;
             for (unsigned int i = 0;; i++) {
                 std::string fileName = setPath + "/"  + currentState + "/" + std::to_string(i) + ".png";
@@ -94,6 +95,7 @@ namespace Main {
 
     void GameInstance::initializeTextures() {
         loadTextureSetFromPath("resources/textures/player", "player");
+        loadTextureSetFromPath("resources/textures/dummy", "dummy");
         loadBackgroundTextureFromPath("resources/textures/brick.png", "brick");
         loadFontFromPath("resources/fonts/arial.ttf", "arial");
         loadAbsoluteBackgroundTexturesFromPath("resources/textures/starry", "starry");
@@ -137,7 +139,7 @@ namespace Main {
         absoluteBackground = Rendering::AbsoluteBackground(&absoluteBackgroundTextures["starry"], &window, 10);
         absoluteBackground.setLooping(true);
 
-        entityRenderers.push_back(Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 1), &camera, &window, &textureSets["player"], 30));
+        entityRenderers.push_back(Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 1), &camera, &window, &textureSets["dummy"], 30));
 
     }
 
