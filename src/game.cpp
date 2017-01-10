@@ -15,6 +15,7 @@ namespace Main {
         keyHandlers = std::vector<IO::KeyHandler*>();
         exitGame = false;
         absoluteBackgroundTextures = std::map<std::string, std::vector<sf::Texture>>();
+        videoModes = std::vector<sf::VideoMode>();
     }
 
     void GameInstance::addFrameTimeToAvg(float frameTime) {
@@ -31,8 +32,27 @@ namespace Main {
         return pow(averageFrameTime, -1);
     }
 
+    void GameInstance::initializeVideoModes() {
+        videoModes.push_back(sf::VideoMode(1920, 1080));
+        videoModes.push_back(sf::VideoMode(1600, 900));
+        videoModes.push_back(sf::VideoMode(1366, 768));
+        videoModes.push_back(sf::VideoMode(1280, 720));
+        videoModes.push_back(sf::VideoMode(1152, 648));
+        videoModes.push_back(sf::VideoMode(1024, 576));
+    }
+
+    sf::VideoMode GameInstance::getLargestCompatibleResolution() {
+        sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
+        for (sf::VideoMode videoMode : videoModes) {
+            if (videoMode.width <= desktopMode.width && videoMode.height <= desktopMode.height) {
+                return videoMode;
+            }
+        }
+        return desktopMode;
+    }
+
     void GameInstance::initializeWindow() {
-        window.create(sf::VideoMode::getDesktopMode(), "Gr.11-Final-Project");
+        window.create(getLargestCompatibleResolution(), "Gr.11-Final-Project");
         camera.setPos(Game::Vector(0, 0));
     }
 
@@ -144,6 +164,7 @@ namespace Main {
     }
 
     void GameInstance::initializeGame() {
+        initializeVideoModes();
         initializeWindow();
         initializeTextures();
         initializeIO();

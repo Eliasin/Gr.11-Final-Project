@@ -31,11 +31,13 @@ namespace Main {
         std::vector<IO::KeyHandler*> keyHandlers;
         std::map<std::string, std::vector<sf::Texture>> absoluteBackgroundTextures;
         Rendering::AbsoluteBackground absoluteBackground;
+        std::vector<sf::VideoMode> videoModes;
 
         bool exitGame;
 
         void addFrameTimeToAvg(float frameTime);
         float getAvgFPS();
+        sf::VideoMode getLargestCompatibleResolution();
 
         void loadTextureSetFromPath(std::string setPath, std::string name);
         void loadAbsoluteBackgroundTexturesFromPath(std::string path, std::string name);
@@ -44,6 +46,7 @@ namespace Main {
 
         void initializeWindow();
         void initializeTextures();
+        void initializeVideoModes();
         void initializeIO();
         void initializeGameLogic();
         void initializeRendering();
