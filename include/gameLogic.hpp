@@ -16,14 +16,6 @@ namespace Game {
         Vector();
     };
 
-    struct Circle {
-        Vector center;
-        int radius;
-        Circle();
-        Circle(const Vector& center, unsigned int radius);
-        bool contains(Vector& point);
-    };
-
     struct Rect {
         Vector topLeft;
         int width, height;
@@ -33,6 +25,15 @@ namespace Game {
         bool contains(const Rect& rect) const;
         Game::Vector getCenter() const;
         bool intersects(const Rect& rect) const;
+    };
+
+    struct Circle {
+        Vector center;
+        int radius;
+        Circle();
+        Circle(const Vector& center, unsigned int radius);
+        bool contains(const Vector& point) const;
+        bool contains(const Rect& rect) const;
     };
 
     struct EntityStats {
@@ -104,6 +105,13 @@ namespace Game {
         Rect rect;
     public:
         RectTargeting(const Rect& rect_);
+        std::vector<unsigned int> isInRange(const std::vector<unsigned int>& entities, Map* map) override;
+    };
+
+    class CircleTargeting : public Targeting {
+        Circle circle;
+    public:
+        CircleTargeting(const Circle& circle_);
         std::vector<unsigned int> isInRange(const std::vector<unsigned int>& entities, Map* map) override;
     };
 

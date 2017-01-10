@@ -28,8 +28,16 @@ namespace Game {
         radius = radius_a;
     }
 
-    bool Circle::contains(Vector& point) {
+    bool Circle::contains(const Vector& point) const {
         return radius >= sqrt(pow((point.x - center.x),2) + pow((point.y - center.y),2));
+    }
+
+    bool Circle::contains(const Rect& rect) const {
+        bool containsTopLeft = contains(rect.topLeft);
+        bool containsTopRight = contains(Vector(rect.topLeft.x + rect.width, rect.topLeft.y));
+        bool containsBottomLeft = contains(Vector(rect.topLeft.x, rect.topLeft.y + rect.height));
+        bool containsBottomRight = contains(Vector(rect.topLeft.x + rect.width, rect.topLeft.y + rect.height));
+        return containsTopLeft && containsTopRight && containsBottomLeft && containsBottomRight;
     }
 
     Rect::Rect() {
@@ -52,7 +60,7 @@ namespace Game {
 
     bool Rect::contains(const Rect& rect) const {
         bool containsTopLeft = contains(rect.topLeft);
-        bool containsTopRight = contains(Vector(rect.topLeft.x + rect.width, topLeft.y));
+        bool containsTopRight = contains(Vector(rect.topLeft.x + rect.width, rect.topLeft.y));
         bool containsBottomLeft = contains(Vector(rect.topLeft.x, rect.topLeft.y + rect.height));
         bool containsBottomRight = contains(Vector(rect.topLeft.x + rect.width, rect.topLeft.y + rect.height));
         return containsTopLeft && containsTopRight && containsBottomLeft && containsBottomRight;
@@ -222,6 +230,20 @@ namespace Game {
         std::vector<unsigned int> entitiesInRange;
         for (unsigned int entityID : entities) {
             if (map && map->getEntityWithID(entityID) && map->getEntityWithID(entityID)->getHitbox().intersects(rect)) {
+                entitiesInRange.push_back(entityID);
+            }
+        }
+        return entitiesInRange;
+    }
+
+    CircleTargeting::CircleTargeting(const Circle& circle_) {
+        circle = circle_;
+    }
+
+    std::vector<unsigned int> CircleTargeting::isInRange(const std::vector<unsigned int>& entities, Map* map) {
+        std::vector<unsigned int> entitiesInRange;
+        for (unsigned int entityID : entities) {
+            if (map && map->getEntityWithID(entityID) && circle.contains(map->getEntityWithID(entityID)->getHitbox())) {
                 entitiesInRange.push_back(entityID);
             }
         }
