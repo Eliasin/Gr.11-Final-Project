@@ -3,6 +3,10 @@
 
 namespace Game {
 
+    float manhattanDistance(Game::Vector p1, Game::Vector p2) {
+        return sqrt(pow((p1.x - p2.x), 2) + pow((p1.y - p2.y), 2));
+    }
+
     Vector::Vector(int x_a, int y_a) {
         x = x_a;
         y = y_a;
@@ -78,17 +82,20 @@ namespace Game {
     }
 
     EntityStats::EntityStats() {
-        stats["max_hp"] = 1;
-        stats["hp"] = 1;
+        stats["max_hp"] = 50;
+        stats["hp"] = 50;
         stats["stam"] = 1;
         stats["sight"] = 1;
         stats["atkSpd"] = 1;
+        stats["range"] = 75;
+        stats["damage"] = 1;
 
         statModifiers["max_hp"] = 1;
         statModifiers["stamina"] = 1;
         statModifiers["sight"] = 1;
         statModifiers["atkSpd"] = 1;
         statModifiers["move"] = 10;
+        statModifiers["damage"] = 1;
     }
 
     EntityStats::EntityStats(const EntityStats& copying) {
@@ -326,18 +333,33 @@ namespace Game {
         return entities;
     }
 
+    const PlayerTeam PlayerTeam::PLAYER_TEAM = PlayerTeam();
+    const EnemyTeam EnemyTeam::ENEMY_TEAM = EnemyTeam();
+    const TerrainTeam TerrainTeam::TERRAIN_TEAM = TerrainTeam();
+
     unsigned int Action::getFrameWait() {
         return frameWait;
     }
 
-    void Action::tickFrameWait() {
-        frameWait -= 1;
+    void Action::tickFrameWait(const std::vector<unsigned int>& entities) {
+        if (delayTicks > 1) {
+            delayTicks -= 1;
+        }
+        else {
+            applyAction(entities);
+            delayTicks = frameWait;
+        }
     }
 
-    HitAction::HitAction(unsigned int damage_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_) {
+    Action::Action() {
+        frameWait = 0;
+        delayTicks = 0;
+    }
+
+    HitAction::HitAction(unsigned int damage_, Map* ownerMap_, std::unique_ptr<Targeting> targeting_, const Team* teamChecker_) {
         damage = damage_;
         ownerMap = ownerMap_;
-        targeting = targeting_;
+        targeting = std::move(targeting_);
         teamChecker = teamChecker_;
     }
 
@@ -353,10 +375,10 @@ namespace Game {
         }
     }
 
-    HealAction::HealAction(unsigned int healAmount_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_) {
+    HealAction::HealAction(unsigned int healAmount_, Map* ownerMap_, std::unique_ptr<Targeting> targeting_, const Team* teamChecker_) {
         healAmount = healAmount_;
         ownerMap = ownerMap_;
-        targeting = targeting_;
+        targeting = std::move(targeting_);
         teamChecker = teamChecker_;
     }
 
@@ -372,10 +394,10 @@ namespace Game {
         }
     }
 
-    DisplacementAction::DisplacementAction(const Vector& displaceBy_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_) {
+    DisplacementAction::DisplacementAction(const Vector& displaceBy_, Map* ownerMap_, std::unique_ptr<Targeting> targeting_, const Team* teamChecker_) {
         displaceBy = displaceBy_;
         ownerMap = ownerMap_;
-        targeting = targeting_;
+        targeting = std::move(targeting_);
         teamChecker = teamChecker_;
     }
 
@@ -483,14 +505,17 @@ namespace Game {
     }
 
     void Map::tickAndApplyActions() {
-        for (std::vector<Action*>::iterator currentAction = actions.begin(); currentAction != actions.end(); currentAction++) {
-            if ((*currentAction)->getFrameWait() != 0) {
-                (*currentAction)->tickFrameWait();
+        for (std::vector<Action*>::iterator action = actions.begin(); action != actions.end(); action++) {
+            if (!(*action)) {
+                action = actions.erase(action);
             }
-            else {
-                (*currentAction)->applyAction(entities);
-                free (*currentAction);
-                currentAction = actions.erase(currentAction);
+        }
+        for (Action*& currentAction : actions) {
+            std::vector<unsigned int> entityIDs = getActiveEntityIDs();
+            currentAction->tickFrameWait(getActiveEntityIDs());
+            if (currentAction->getFrameWait() == 0) {
+                free (currentAction);
+                currentAction = NULL;
             }
         }
 

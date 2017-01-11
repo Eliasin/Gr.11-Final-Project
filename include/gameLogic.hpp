@@ -16,6 +16,8 @@ namespace Game {
         Vector();
     };
 
+    float manhattanDistance(Game::Vector p1, Game::Vector p2);
+
     struct Rect {
         Vector topLeft;
         int width, height;
@@ -156,33 +158,35 @@ namespace Game {
     class Action {
     protected:
         unsigned int frameWait;
-        Targeting* targeting;
-        Team* teamChecker;
+        unsigned int delayTicks;
+        std::unique_ptr<Targeting> targeting;
+        const Team* teamChecker;
         Map* ownerMap;
     public:
+        Action();
         void setTargeting(Targeting* targeting);
         unsigned int getFrameWait();
-        void tickFrameWait();
-        virtual void applyAction(std::vector<Entity*>& entities)=0;
+        void tickFrameWait(const std::vector<unsigned int>& entities);
+        virtual void applyAction(const std::vector<unsigned int>& entities)=0;
     };
 
     class HitAction : public Action {
         unsigned int damage;
     public:
-        HitAction(unsigned int damage_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_);
+        HitAction(unsigned int damage_, Map* ownerMap_, std::unique_ptr<Targeting> targeting_,const Team* teamChecker_);
         void applyAction(const std::vector<unsigned int>& entities);
     };
 
     class HealAction : public Action {
         unsigned int healAmount;
     public:
-        HealAction(unsigned int healAmount_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_);
+        HealAction(unsigned int healAmount_, Map* ownerMap_, std::unique_ptr<Targeting> targeting_, const Team* teamChecker_);
         void applyAction(const std::vector<unsigned int>& entities);
     };
 
     class DisplacementAction : public Action {
         Vector displaceBy;
-        DisplacementAction(const Vector& displaceBy_, Map* ownerMap_, Targeting* targeting_, Team* teamChecker_);
+        DisplacementAction(const Vector& displaceBy_, Map* ownerMap_, std::unique_ptr<Targeting> targeting_, const Team* teamChecker_);
         void applyAction(const std::vector<unsigned int>& entities);
     };
 

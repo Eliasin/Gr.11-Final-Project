@@ -1,5 +1,7 @@
 #pragma once
 #include <map>
+#include <utility>
+#include <cmath>
 #include "gameLogic.hpp"
 #include "rendering.hpp"
 #include <SFML/Main.hpp>
@@ -17,8 +19,22 @@ namespace IO {
 
     class MouseHandler {
     protected:
-        virtual void onMouseButtonPress(sf::Mouse::Button pressed)=0;
-        virtual void onMouseMove(sf::Vector2<int> position)=0;
+        virtual void onMouseEvent(sf::Vector2<int> position, sf::Mouse::Button pressed);
+    public:
+        virtual void checkForMouseEvents()=0;
+    };
+
+    class PlayerAttackMouseHandler : public MouseHandler {
+    protected:
+        Game::Map* map;
+        unsigned int entityID;
+        virtual bool entityValid();
+        Rendering::Camera* camera;
+        virtual void spawnAttackAction(Game::Vector pos);
+        virtual void onMouseEvent(sf::Vector2<int> position, sf::Mouse::Button pressed) override;
+    public:
+        PlayerAttackMouseHandler(unsigned int entityID_, Game::Map* map_, Rendering::Camera* camera_);
+        virtual void checkForMouseEvents() override;
     };
 
     class GameKeyHandler : public KeyHandler {

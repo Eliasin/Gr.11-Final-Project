@@ -27,12 +27,20 @@ namespace Rendering {
         return sf::Vector2<float>(gameCoords.x - viewBox.topLeft.x, gameCoords.y - viewBox.topLeft.y);
     }
 
+    Game::Vector Camera::reverseTranslate(const sf::Vector2<float>& displayCoords) {
+        return Game::Vector(displayCoords.x + viewBox.topLeft.x, displayCoords.y + viewBox.topLeft.y);
+    }
+
+    Game::Vector Camera::reverseTranslate(const sf::Vector2<int>& displayCoords) {
+        return Game::Vector(displayCoords.x + viewBox.topLeft.x, displayCoords.y + viewBox.topLeft.y);
+    }
+
     void Camera::centerOn(const Game::Vector& centeringOn, const sf::Window& window) {
         setPos(Game::Vector(centeringOn.x - window.getSize().x / 2, centeringOn.y - window.getSize().y / 2));
     }
 
     sf::Vector2<float> Camera::scaleSpriteToMatcHitbox(const sf::Sprite& sprite, const sf::Window& window, const Game::Rect& hitbox) {
-        return scaleSpriteRelativeToWindow(sprite, window, sf::Vector2<float>((float)hitbox.width / (float)viewBox.width, (float)hitbox.height / (float)viewBox.height));        return sf::Vector2<float>(0.f, 0.f);
+        return scaleSpriteRelativeToWindow(sprite, window, sf::Vector2<float>((float)hitbox.width / (float)viewBox.width, (float)hitbox.height / (float)viewBox.height));
     }
 
     sf::Vector2<float> scaleSpriteRelativeToWindow(const sf::Sprite& sprite, const sf::Window& window, const sf::Vector2<float>& size) {

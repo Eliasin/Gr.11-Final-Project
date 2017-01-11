@@ -14,6 +14,8 @@ namespace Rendering {
         void setViewBox(const Game::Rect& newViewBox);
         void centerOn(const Game::Vector& centeringOn, const sf::Window& window);
         sf::Vector2<float> translate(const Game::Vector& gameCoords);
+        Game::Vector reverseTranslate(const sf::Vector2<float>& displayCoords);
+        Game::Vector reverseTranslate(const sf::Vector2<int>& displayCoords);
         sf::Vector2<float> scaleSpriteToMatcHitbox(const sf::Sprite& sprite, const sf::Window& window, const Game::Rect& hitbox);
     };
 
