@@ -78,7 +78,20 @@ namespace Game {
     }
 
     bool Rect::intersects(const Rect& rect) const {
-        return rect.contains(topLeft) || rect.contains(Vector(topLeft.x + width, topLeft.y)) || rect.contains(Vector(topLeft.x + width, topLeft.y + height)) || rect.contains(Vector(topLeft.x, topLeft.y + height));
+        bool containsTopLeft = contains(rect.topLeft);
+        bool containsTopRight = contains(Vector(rect.topLeft.x + rect.width, rect.topLeft.y));
+        bool containsBottomLeft = contains(Vector(rect.topLeft.x, rect.topLeft.y + rect.height));
+        bool containsBottomRight = contains(Vector(rect.topLeft.x + rect.width, rect.topLeft.y + rect.height));
+
+        bool containedTopLeft = rect.contains(topLeft);
+        bool containedTopRight = rect.contains(Vector(topLeft.x + width, topLeft.y));
+        bool containedBottomLeft = rect.contains(Vector(topLeft.x, topLeft.y + height));
+        bool containedBottomRight = rect.contains(Vector(topLeft.x + width, topLeft.y + height));
+
+        bool containsOtherRect = containsTopLeft || containsTopRight || containsBottomLeft || containsBottomRight;
+        bool containedByOtherRect = containedTopLeft || containedTopRight || containedBottomLeft || containedBottomRight;
+
+        return containsOtherRect || containedByOtherRect;
     }
 
     EntityStats::EntityStats() {
