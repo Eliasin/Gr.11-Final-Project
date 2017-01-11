@@ -52,7 +52,7 @@ namespace Main {
     }
 
     void GameInstance::initializeWindow() {
-        window.create(getLargestCompatibleResolution(), "Gr.11-Final-Project");
+        window.create(getLargestCompatibleResolution(), "Gr.11-Final-Project", sf::Style::None | sf::Style::Titlebar | sf::Style::Close);
         camera.setPos(Game::Vector(0, 0));
     }
 
@@ -141,7 +141,7 @@ namespace Main {
     }
 
     void GameInstance::initializeRendering() {
-        camera.setViewBox(Game::Rect(Game::Vector(0, 0), 1920, 1080));
+        camera.setViewBox(Game::Rect(Game::Vector(0, 0), window.getSize().x, window.getSize().y));
         Rendering::EntityRenderer playerRenderer = Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 0), &camera, &window, &textureSets["player"], 30);
         entityRenderers.push_back(playerRenderer);
         backgrounds.push_back(Rendering::Background(&backgroundTextures["brick"], &camera, &window, Game::Rect(Game::Vector(-2000, -2000), 4000, 4000)));
