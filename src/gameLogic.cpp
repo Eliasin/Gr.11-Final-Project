@@ -354,14 +354,14 @@ namespace Game {
         return frameWait;
     }
 
-    void Action::tickFrameWait(const std::vector<unsigned int>& entities) {
+    unsigned int Action::tick(const std::vector<unsigned int>& entities) {
         if (delayTicks > 1) {
             delayTicks -= 1;
         }
         else {
             applyAction(entities);
-            delayTicks = frameWait;
         }
+        return delayTicks;
     }
 
     Action::Action() {
@@ -509,8 +509,7 @@ namespace Game {
     void Map::tickAndApplyActions() {
         for (std::vector<std::unique_ptr<Action>>::iterator action = actions.begin(); action != actions.end(); action++) {
             std::vector<unsigned int> entityIDs = getActiveEntityIDs();
-            (*action)->tickFrameWait(getActiveEntityIDs());
-            if ((*action)->getFrameWait() == 0) {
+            if ((*action)->tick(getActiveEntityIDs()) == 0) {
                 action = actions.erase(action);
             }
         }

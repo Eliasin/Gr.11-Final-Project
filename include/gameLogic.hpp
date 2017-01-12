@@ -162,32 +162,36 @@ namespace Game {
         std::unique_ptr<Targeting> targeting;
         const Team* teamChecker;
         Map* ownerMap;
+        virtual void applyAction(const std::vector<unsigned int>& entities)=0;
     public:
         Action();
         void setTargeting(Targeting* targeting);
         unsigned int getFrameWait();
-        void tickFrameWait(const std::vector<unsigned int>& entities);
-        virtual void applyAction(const std::vector<unsigned int>& entities)=0;
+        unsigned int tick(const std::vector<unsigned int>& entities);
     };
 
     class HitAction : public Action {
         unsigned int damage;
+    protected:
+        virtual void applyAction(const std::vector<unsigned int>& entities) override;
     public:
         HitAction(unsigned int damage_, Map* ownerMap_, std::unique_ptr<Targeting> targeting_,const Team* teamChecker_);
-        void applyAction(const std::vector<unsigned int>& entities);
     };
 
     class HealAction : public Action {
         unsigned int healAmount;
+    protected:
+        virtual void applyAction(const std::vector<unsigned int>& entities) override;
     public:
         HealAction(unsigned int healAmount_, Map* ownerMap_, std::unique_ptr<Targeting> targeting_, const Team* teamChecker_);
-        void applyAction(const std::vector<unsigned int>& entities);
     };
 
     class DisplacementAction : public Action {
         Vector displaceBy;
+    protected:
+        virtual void applyAction(const std::vector<unsigned int>& entities) override;
+    public:
         DisplacementAction(const Vector& displaceBy_, Map* ownerMap_, std::unique_ptr<Targeting> targeting_, const Team* teamChecker_);
-        void applyAction(const std::vector<unsigned int>& entities);
     };
 
     class Map {
