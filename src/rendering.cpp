@@ -114,8 +114,8 @@ namespace Rendering {
     }
 
     EntityEventParser::STATE EntityEventParser::getEntityState() {
-        grabEntityState();
         updateCurrentState();
+        grabEntityState();
         return currentState;
     }
 
@@ -140,6 +140,7 @@ namespace Rendering {
         frameDelay = frameDelay_;
         currentFrame = 0;
         ticksSinceFrameChange = 0;
+        currentlyAnimating = EntityEventParser::STATE::IDLE;
         scaleSprite();
     }
 
@@ -157,6 +158,7 @@ namespace Rendering {
 
     void EntityRenderer::switchAnim(EntityEventParser::STATE newState) {
         currentTextureSet = &(*textureSet)[stateToTextureName.find(newState)->second];
+        currentlyAnimating = newState;
         currentFrame = 0;
         ticksSinceFrameChange = 0;
     }
@@ -182,7 +184,7 @@ namespace Rendering {
 
     void EntityRenderer::updateSpriteTexture() {
         EntityEventParser::STATE entityState = entityEventParser.getEntityState();
-        if (lastState != entityState) {
+        if (lastState != entityState && entityState != EntityEventParser::STATE::IDLE && entityState != currentlyAnimating) {
             switchAnim(entityState);
         }
         else {

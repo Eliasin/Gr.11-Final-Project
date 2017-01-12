@@ -52,6 +52,7 @@ namespace Rendering {
         Camera* camera;
         sf::Window* window;
         EntityEventParser::STATE lastState;
+        EntityEventParser::STATE currentlyAnimating;
 
         unsigned int currentFrame;
         unsigned int frameDelay;
