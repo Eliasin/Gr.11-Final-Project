@@ -2,6 +2,7 @@
 #include <map>
 #include <utility>
 #include <cmath>
+#include <iostream>
 #include "gameLogic.hpp"
 #include "rendering.hpp"
 #include <SFML/Main.hpp>
@@ -19,7 +20,7 @@ namespace IO {
 
     class MouseHandler {
     protected:
-        virtual void onMouseEvent(sf::Vector2<int> position, sf::Mouse::Button pressed);
+        virtual void onMouseEvent(sf::Vector2<int> position, sf::Mouse::Button pressed)=0;
     public:
         virtual void checkForMouseEvents()=0;
     };
@@ -27,6 +28,7 @@ namespace IO {
     class PlayerAttackMouseHandler : public MouseHandler {
     protected:
         Game::Map* map;
+        unsigned int framesSinceAttack;
         unsigned int entityID;
         virtual bool entityValid();
         Rendering::Camera* camera;

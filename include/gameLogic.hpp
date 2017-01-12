@@ -34,11 +34,30 @@ namespace Game {
         int radius;
         Circle();
         Circle(const Vector& center, unsigned int radius);
+        bool intersects(const Rect& rect) const;
         bool contains(const Vector& point) const;
         bool contains(const Rect& rect) const;
     };
 
     struct EntityStats {
+        enum class STAT {
+            MAX_HP,
+            HP,
+            MAX_STAM,
+            STAM,
+            SIGHT,
+            ATK_DELAY,
+            RNG,
+            DMG
+        };
+        enum class STAT_MOD {
+            MAX_HP,
+            MAX_STAM,
+            SIGHT,
+            ATK_DELAY,
+            MOVE,
+            DMG
+        };
         EntityStats();
         EntityStats(const EntityStats& copying);
         EntityStats operator+(const EntityStats& adding);
@@ -46,8 +65,8 @@ namespace Game {
         void operator=(const EntityStats& copying);
         void operator+=(const EntityStats& adding);
         void operator-=(const EntityStats& subtracting);
-        std::map<std::string, int> stats;
-        std::map<std::string, float> statModifiers;
+        std::map<STAT, int> stats;
+        std::map<STAT_MOD, float> statModifiers;
     };
 
     struct MovementMods {
@@ -75,15 +94,6 @@ namespace Game {
         unsigned int getMaxFrames() const;
         void apply(EntityStats& stats) const;
         void tick();
-    };
-
-    struct EntityTemplate {
-        EntityTemplate();
-        EntityTemplate(const EntityStats& stats_, const Rect& hitbox_, BehaviourProfile* behaviourProfile_);
-        EntityTemplate(const EntityTemplate& copying);
-        EntityStats stats;
-        Rect hitbox;
-        BehaviourProfile* behaviourProfile;
     };
 
     class Targeting {
@@ -155,6 +165,17 @@ namespace Game {
         virtual std::vector<unsigned int> canBeDisplaced(const std::vector<unsigned int>& entities, Map* map) const override;
     };
 
+
+    struct EntityTemplate {
+        EntityTemplate();
+        EntityTemplate(const EntityStats& stats_, const Rect& hitbox_, BehaviourProfile* behaviourProfile_, Team::TEAM team_);
+        EntityTemplate(const EntityTemplate& copying);
+        EntityStats stats;
+        Rect hitbox;
+        BehaviourProfile* behaviourProfile;
+        Team::TEAM team;
+    };
+
     class Action {
     protected:
         unsigned int frameWait;
@@ -201,7 +222,7 @@ namespace Game {
         Rect playableArea;
     public:
         Map();
-        void addActionToQueue(std::unique_ptr<Action>& action);
+        void addActionToQueue(std::unique_ptr<Action> action);
         void tickAndApplyActions();
         Entity* getEntityWithID(unsigned int ID);
         unsigned int createEntity(const EntityTemplate& entityTemplate);

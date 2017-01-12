@@ -29,6 +29,7 @@ namespace Main {
         std::map<std::string, sf::Texture> backgroundTextures;
         Rendering::Camera camera;
         std::vector<IO::KeyHandler*> keyHandlers;
+        std::vector<IO::MouseHandler*> mouseHandlers;
         std::map<std::string, std::vector<sf::Texture>> absoluteBackgroundTextures;
         Rendering::AbsoluteBackground absoluteBackground;
         std::vector<sf::VideoMode> videoModes;

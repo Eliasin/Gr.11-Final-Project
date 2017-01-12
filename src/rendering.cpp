@@ -91,7 +91,7 @@ namespace Rendering {
         if (entityValid()) {
             Game::EntityStats currentEntityState = map->getEntityWithID(entityID)->getState().stats;
 
-            if (lastState.stats.stats["hp"] > currentEntityState.stats["hp"]) {
+            if (lastState.stats.stats[Game::EntityStats::STAT::HP] > currentEntityState.stats[Game::EntityStats::STAT::HP]) {
                 currentState = EntityEventParser::STATE::HIT;
             }
             else {

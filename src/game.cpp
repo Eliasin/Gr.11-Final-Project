@@ -13,6 +13,7 @@ namespace Main {
         backgroundTextures = std::map<std::string, sf::Texture>();
         camera = Rendering::Camera();
         keyHandlers = std::vector<IO::KeyHandler*>();
+        mouseHandlers = std::vector<IO::MouseHandler*>();
         exitGame = false;
         absoluteBackgroundTextures = std::map<std::string, std::vector<sf::Texture>>();
         videoModes = std::vector<sf::VideoMode>();
@@ -124,6 +125,8 @@ namespace Main {
     void GameInstance::initializeIO() {
         std::map<sf::Keyboard::Key, Game::Vector> wasdMovementMap = {{sf::Keyboard::W, Game::Vector(0, -1)}, {sf::Keyboard::A, Game::Vector(-1, 0)}, {sf::Keyboard::S, Game::Vector(0, 1)}, {sf::Keyboard::D, Game::Vector(1, 0)}};
         keyHandlers.push_back(new IO::EntityMovementKeyHandler(wasdMovementMap, &map, 0));
+
+        mouseHandlers.push_back(new IO::PlayerAttackMouseHandler(0, &map, &camera));
     }
 
     void GameInstance::initializeGameLogic() {
@@ -132,8 +135,8 @@ namespace Main {
 
         Game::Rect testDummyHitbox(Game::Vector(100, 100), 100, 100);
 
-        entityTemplates["player"] = Game::EntityTemplate(defaultStats, defaultHitbox, NULL);
-        entityTemplates["testDummy"] = Game::EntityTemplate(defaultStats, testDummyHitbox, NULL);
+        entityTemplates["player"] = Game::EntityTemplate(defaultStats, defaultHitbox, NULL, Game::Team::TEAM::PLAYER);
+        entityTemplates["testDummy"] = Game::EntityTemplate(defaultStats, testDummyHitbox, NULL, Game::Team::TEAM::ENEMY);
 
         map.setPlayableArea(Game::Rect(Game::Vector(-2000, -2000), 4000, 4000));
         map.createEntity(entityTemplates["player"]);
@@ -184,13 +187,21 @@ namespace Main {
         for (IO::KeyHandler* currentKeyHandler : keyHandlers) {
             currentKeyHandler->checkForKeyPress();
         }
+
+        for (IO::MouseHandler* currentMouseHandler : mouseHandlers) {
+            currentMouseHandler->checkForMouseEvents();
+        }
     }
 
     void GameInstance::cullRenderers() {
+        std::vector<std::vector<Rendering::EntityRenderer>::iterator> needsErasing;
         for (std::vector<Rendering::EntityRenderer>::iterator currentRenderer = entityRenderers.begin(); currentRenderer != entityRenderers.end(); currentRenderer++) {
             if (!currentRenderer->getEntityEventParser().entityValid()) {
-                currentRenderer = entityRenderers.erase(currentRenderer);
+                needsErasing.push_back(currentRenderer);
             }
+        }
+        for (std::vector<Rendering::EntityRenderer>::iterator erasing : needsErasing) {
+            entityRenderers.erase(erasing);
         }
     }
 
@@ -230,7 +241,7 @@ namespace Main {
     }
 
     void GameInstance::tickGame() {
-
+        map.tickAndApplyActions();
     }
 
     void GameInstance::run() {

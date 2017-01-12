@@ -32,6 +32,14 @@ namespace Game {
         radius = radius_a;
     }
 
+    bool Circle::intersects(const Rect& rect) const {
+        bool containsTopLeft = contains(rect.topLeft);
+        bool containsTopRight = contains(Vector(rect.topLeft.x + rect.width, rect.topLeft.y));
+        bool containsBottomLeft = contains(Vector(rect.topLeft.x, rect.topLeft.y + rect.height));
+        bool containsBottomRight = contains(Vector(rect.topLeft.x + rect.width, rect.topLeft.y + rect.height));
+        return containsTopLeft || containsTopRight || containsBottomLeft || containsBottomRight;
+    }
+
     bool Circle::contains(const Vector& point) const {
         return radius >= sqrt(pow((point.x - center.x),2) + pow((point.y - center.y),2));
     }
@@ -95,20 +103,21 @@ namespace Game {
     }
 
     EntityStats::EntityStats() {
-        stats["max_hp"] = 50;
-        stats["hp"] = 50;
-        stats["stam"] = 1;
-        stats["sight"] = 1;
-        stats["atkSpd"] = 1;
-        stats["range"] = 75;
-        stats["damage"] = 1;
+        stats[STAT::MAX_HP] = 50;
+        stats[STAT::HP] = 50;
+        stats[STAT::MAX_STAM] = 1;
+        stats[STAT::STAM] = 1;
+        stats[STAT::SIGHT] = 1;
+        stats[STAT::ATK_DELAY] = 15;
+        stats[STAT::RNG] = 75;
+        stats[STAT::DMG] = 1;
 
-        statModifiers["max_hp"] = 1;
-        statModifiers["stamina"] = 1;
-        statModifiers["sight"] = 1;
-        statModifiers["atkSpd"] = 1;
-        statModifiers["move"] = 10;
-        statModifiers["damage"] = 1;
+        statModifiers[STAT_MOD::MAX_HP] = 1;
+        statModifiers[STAT_MOD::MAX_STAM] = 1;
+        statModifiers[STAT_MOD::SIGHT] = 1;
+        statModifiers[STAT_MOD::ATK_DELAY] = 1;
+        statModifiers[STAT_MOD::MOVE] = 10;
+        statModifiers[STAT_MOD::DMG] = 1;
     }
 
     EntityStats::EntityStats(const EntityStats& copying) {
@@ -118,10 +127,10 @@ namespace Game {
 
     EntityStats EntityStats::operator+(const EntityStats& adding) {
         EntityStats tempStats(*this);
-        for (std::pair<std::string, int> statPair : adding.stats) {
+        for (std::pair<STAT, int> statPair : adding.stats) {
             tempStats.stats[statPair.first] += statPair.second;
         }
-        for (std::pair<std::string, int> statPair : adding.statModifiers) {
+        for (std::pair<STAT_MOD, int> statPair : adding.statModifiers) {
             tempStats.statModifiers[statPair.first] += statPair.second;
         }
         return tempStats;
@@ -129,10 +138,10 @@ namespace Game {
 
     EntityStats EntityStats::operator-(const EntityStats& subtracting) {
         EntityStats tempStats(*this);
-        for (std::pair<std::string, int> statPair : subtracting.stats) {
+        for (std::pair<STAT, int> statPair : subtracting.stats) {
             tempStats.stats[statPair.first] -= statPair.second;
         }
-        for (std::pair<std::string, int> statPair : subtracting.statModifiers) {
+        for (std::pair<STAT_MOD, int> statPair : subtracting.statModifiers) {
             tempStats.statModifiers[statPair.first] -= statPair.second;
         }
         return tempStats;
@@ -144,19 +153,19 @@ namespace Game {
     }
 
     void EntityStats::operator+=(const EntityStats& adding) {
-        for (std::pair<std::string, int> statPair : adding.stats) {
+        for (std::pair<STAT, int> statPair : adding.stats) {
             stats[statPair.first] += statPair.second;
         }
-        for (std::pair<std::string, int> statPair : adding.statModifiers) {
+        for (std::pair<STAT_MOD, int> statPair : adding.statModifiers) {
             statModifiers[statPair.first] += statPair.second;
         }
     }
 
     void EntityStats::operator-=(const EntityStats& subtracting) {
-        for (std::pair<std::string, int> statPair : subtracting.stats) {
+        for (std::pair<STAT, int> statPair : subtracting.stats) {
             stats[statPair.first] -= statPair.second;
         }
-        for (std::pair<std::string, int> statPair : subtracting.statModifiers) {
+        for (std::pair<STAT_MOD, int> statPair : subtracting.statModifiers) {
             statModifiers[statPair.first] -= statPair.second;
         }
     }
@@ -214,10 +223,11 @@ namespace Game {
         hitbox = Rect();
     }
 
-    EntityTemplate::EntityTemplate(const EntityStats& stats_, const Rect& hitbox_, BehaviourProfile* behaviourProfile_) {
+    EntityTemplate::EntityTemplate(const EntityStats& stats_, const Rect& hitbox_, BehaviourProfile* behaviourProfile_, Team::TEAM team_) {
         stats = stats_;
         hitbox = hitbox_;
         behaviourProfile = behaviourProfile_;
+        team = team_;
     }
 
     EntityTemplate::EntityTemplate(const EntityTemplate& copying) {
@@ -263,7 +273,7 @@ namespace Game {
     std::vector<unsigned int> CircleTargeting::isInRange(const std::vector<unsigned int>& entities, Map* map) {
         std::vector<unsigned int> entitiesInRange;
         for (unsigned int entityID : entities) {
-            if (map && map->getEntityWithID(entityID) && circle.contains(map->getEntityWithID(entityID)->getHitbox())) {
+            if (map && map->getEntityWithID(entityID) && circle.intersects(map->getEntityWithID(entityID)->getHitbox())) {
                 entitiesInRange.push_back(entityID);
             }
         }
@@ -355,10 +365,10 @@ namespace Game {
     }
 
     unsigned int Action::tick(const std::vector<unsigned int>& entities) {
-        if (delayTicks > 1) {
+        if (delayTicks > 0) {
             delayTicks -= 1;
         }
-        else {
+        if (delayTicks == 0) {
             applyAction(entities);
         }
         return delayTicks;
@@ -377,12 +387,12 @@ namespace Game {
     }
 
     void HitAction::applyAction(const std::vector<unsigned int>& entities) {
-        std::vector<unsigned int> targetableEntities = targeting->isInRange(entities, ownerMap);
+        std::vector<unsigned int> targetableEntities = teamChecker->canBeHit(targeting->isInRange(entities, ownerMap), ownerMap);
         for (unsigned int entityID : targetableEntities) {
             if (ownerMap && ownerMap->getEntityWithID(entityID)) {
                 Entity* entity = ownerMap->getEntityWithID(entityID);
                 EntityStats newStats = entity->getBaseStats();
-                newStats.stats["hp"] -= damage;
+                newStats.stats[EntityStats::STAT::HP] -= damage;
                 entity->setStats(newStats);
             }
         }
@@ -401,7 +411,7 @@ namespace Game {
             if (ownerMap && ownerMap->getEntityWithID(entityID)) {
                 Entity* entity = ownerMap->getEntityWithID(entityID);
                 EntityStats newStats = entity->getBaseStats();
-                newStats.stats["hp"] += healAmount;
+                newStats.stats[EntityStats::STAT::HP] += healAmount;
                 entity->setStats(newStats);
             }
         }
@@ -429,6 +439,7 @@ namespace Game {
         baseStats = entityTemplate.stats;
         behaviourProfile = entityTemplate.behaviourProfile;
         ownerMap = owner;
+        team = entityTemplate.team;
     }
 
     const unsigned int Entity::getID() {
@@ -444,8 +455,8 @@ namespace Game {
     }
 
     void Entity::move(const Vector& moveBy) {
-        int newX = hitbox.topLeft.x + moveBy.x * getFinalStats().statModifiers["move"];
-        int newY = hitbox.topLeft.y + moveBy.y * getFinalStats().statModifiers["move"];
+        int newX = hitbox.topLeft.x + moveBy.x * getFinalStats().statModifiers[EntityStats::STAT_MOD::MOVE];
+        int newY = hitbox.topLeft.y + moveBy.y * getFinalStats().statModifiers[EntityStats::STAT_MOD::MOVE];
         Rect newHitbox = Rect(Vector(newX, newY), hitbox.width, hitbox.height);
         if (ownerMap->entityCanMoveToSpace(id, newHitbox)) {
             hitbox = newHitbox;
@@ -497,7 +508,7 @@ namespace Game {
         team = team_;
     }
 
-    void Map::addActionToQueue(std::unique_ptr<Action>& action) {
+    void Map::addActionToQueue(std::unique_ptr<Action> action) {
         actions.push_back(std::move(action));
     }
 
@@ -507,11 +518,25 @@ namespace Game {
     }
 
     void Map::tickAndApplyActions() {
+        std::vector<std::vector<std::unique_ptr<Action>>::iterator> needsErasing;
         for (std::vector<std::unique_ptr<Action>>::iterator action = actions.begin(); action != actions.end(); action++) {
             std::vector<unsigned int> entityIDs = getActiveEntityIDs();
             if ((*action)->tick(getActiveEntityIDs()) == 0) {
-                action = actions.erase(action);
+                needsErasing.push_back(action);
             }
+        }
+        for (std::vector<std::unique_ptr<Action>>::iterator erasing : needsErasing) {
+            actions.erase(erasing);
+        }
+
+        std::vector<std::vector<std::unique_ptr<Entity>>::iterator> deadEntities;
+        for (std::vector<std::unique_ptr<Entity>>::iterator entity = entities.begin(); entity != entities.end(); entity++) {
+            if ((*entity)->getFinalStats().stats[EntityStats::STAT::HP] < 1) {
+                deadEntities.push_back(entity);
+            }
+        }
+        for (std::vector<std::unique_ptr<Entity>>::iterator deadEntity : deadEntities) {
+            entities.erase(deadEntity);
         }
     }
 
