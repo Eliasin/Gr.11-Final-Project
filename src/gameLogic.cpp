@@ -497,61 +497,43 @@ namespace Game {
         team = team_;
     }
 
-    void Map::addActionToQueue(Action* action) {
-        actions.push_back(action);
+    void Map::addActionToQueue(std::unique_ptr<Action>& action) {
+        actions.push_back(std::move(action));
     }
 
     Map::Map() {
         currentMaxID = 0;
-        std::vector<Entity*> entities = std::vector<Entity*>();
-        std::vector<Action*> actions = std::vector<Action*>();
         playableArea = Rect(Vector(0, 0), 0, 0);
     }
 
-    Map::~Map() {
-        for (Entity* currentEntity : entities) {
-            free(currentEntity);
-        }
-        for (Action* currentAction : actions) {
-            free(currentAction);
-        }
-    }
-
     void Map::tickAndApplyActions() {
-        for (std::vector<Action*>::iterator action = actions.begin(); action != actions.end(); action++) {
-            if (!(*action)) {
+        for (std::vector<std::unique_ptr<Action>>::iterator action = actions.begin(); action != actions.end(); action++) {
+            std::vector<unsigned int> entityIDs = getActiveEntityIDs();
+            (*action)->tickFrameWait(getActiveEntityIDs());
+            if ((*action)->getFrameWait() == 0) {
                 action = actions.erase(action);
             }
         }
-        for (Action*& currentAction : actions) {
-            std::vector<unsigned int> entityIDs = getActiveEntityIDs();
-            currentAction->tickFrameWait(getActiveEntityIDs());
-            if (currentAction->getFrameWait() == 0) {
-                free (currentAction);
-                currentAction = NULL;
-            }
-        }
-
     }
 
     Entity* Map::getEntityWithID(unsigned int ID) {
-        for (Entity* currentEntity : entities) {
+        for (std::unique_ptr<Entity>& currentEntity : entities) {
             if (currentEntity->getID() == ID) {
-                return currentEntity;
+                return currentEntity.get();
             }
         }
         return NULL;
     }
 
     unsigned int Map::createEntity(const EntityTemplate& entityTemplate) {
-        entities.push_back(new Entity(entityTemplate, currentMaxID, this));
+        entities.push_back(std::move(std::unique_ptr<Entity>(new Entity(entityTemplate, currentMaxID, this))));
         currentMaxID += 1;
         return currentMaxID - 1;
     }
 
     std::vector<unsigned int> Map::getActiveEntityIDs() {
         std::vector<unsigned int> returnVec;
-        for (Game::Entity* currentEntity : entities) {
+        for (std::unique_ptr<Entity>& currentEntity : entities) {
             returnVec.push_back(currentEntity->getID());
         }
         return returnVec;
@@ -559,7 +541,7 @@ namespace Game {
 
     bool Map::spaceEmpty(const Rect& space) {
         bool empty = true;
-        for (Entity* currentEntity : entities) {
+        for (std::unique_ptr<Entity>& currentEntity : entities) {
             if (currentEntity->getHitbox().intersects(space)) {
                 empty = false;
             }
@@ -574,17 +556,13 @@ namespace Game {
     bool Map::entityCanMoveToSpace(unsigned int entityID, const Rect& space) {
         bool moveable = true;
         bool inPlayableArea = playableArea.contains(space);
-        for (Entity* currentEntity : entities) {
+        for (std::unique_ptr<Entity>& currentEntity : entities) {
             bool spaceNotEmpty = currentEntity->getHitbox().intersects(space) && currentEntity->getID() != entityID;
             if (spaceNotEmpty || !inPlayableArea) {
                 moveable = false;
             }
         }
         return moveable;
-    }
-
-    const std::vector<Entity*>& Map::getEntities() {
-        return entities;
     }
 
 }

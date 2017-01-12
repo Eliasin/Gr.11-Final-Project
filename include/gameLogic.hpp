@@ -192,13 +192,12 @@ namespace Game {
 
     class Map {
         unsigned int currentMaxID;
-        std::vector<Entity*> entities;
-        std::vector<Action*> actions;
+        std::vector<std::unique_ptr<Entity>> entities;
+        std::vector<std::unique_ptr<Action>> actions;
         Rect playableArea;
     public:
         Map();
-        ~Map();
-        void addActionToQueue(Action* action);
+        void addActionToQueue(std::unique_ptr<Action>& action);
         void tickAndApplyActions();
         Entity* getEntityWithID(unsigned int ID);
         unsigned int createEntity(const EntityTemplate& entityTemplate);
@@ -206,7 +205,6 @@ namespace Game {
         bool spaceEmpty(const Rect& space);
         void setPlayableArea(const Rect& playableArea_);
         bool entityCanMoveToSpace(unsigned int entityID, const Rect& space);
-        const std::vector<Entity*>& getEntities();
     };
 
     class Entity {
