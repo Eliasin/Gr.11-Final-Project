@@ -107,6 +107,15 @@ namespace Rendering {
         return done;
     }
 
+    void Animation::setCentered(bool centered) {
+        if (centered) {
+            sprite.setOrigin(sprite.getTextureRect().width, sprite.getTextureRect().height);
+        }
+        else {
+            sprite.setOrigin(0, 0);
+        }
+    }
+
     EntityEventParser::EntityEventParser(Game::Map* map_, unsigned int entityID_) {
         map = map_;
         entityID = entityID_;

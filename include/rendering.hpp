@@ -38,6 +38,7 @@ namespace Rendering {
         void tick();
         const sf::Sprite& getSprite();
         bool doneAnimating();
+        void setCentered(bool centered);
     };
 
     class EntityEventParser {
