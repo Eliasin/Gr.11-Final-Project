@@ -6,6 +6,8 @@
 #include <memory>
 
 namespace Game {
+    const float PI = 3.14159265359;
+
     class Entity;
     class Map;
 
@@ -15,6 +17,8 @@ namespace Game {
         Vector(const Vector& vector);
         Vector();
     };
+
+    Vector rotatePoint(Vector point, Vector anchor, float angle);
 
     float manhattanDistance(Game::Vector p1, Game::Vector p2);
 

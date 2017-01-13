@@ -24,7 +24,9 @@ namespace Main {
         std::map<std::string, Game::EntityTemplate> entityTemplates;
         sf::RenderWindow window;
         std::map<std::string, std::map<std::string, std::vector<sf::Texture>>> textureSets;
+        std::map<std::string, std::vector<sf::Texture>> attackAnimations;
         std::vector<Rendering::EntityRenderer> entityRenderers;
+        std::vector<Rendering::Animation> animations;
         std::vector<Rendering::Background> backgrounds;
         std::map<std::string, sf::Texture> backgroundTextures;
         Rendering::Camera camera;
@@ -44,6 +46,7 @@ namespace Main {
         void loadAbsoluteBackgroundTexturesFromPath(std::string path, std::string name);
         void loadBackgroundTextureFromPath(std::string path, std::string name);
         void loadFontFromPath(std::string path, std::string name);
+        void loadAnimationSet(std::string path, std::string name);
 
         void initializeWindow();
         void initializeTextures();
@@ -57,8 +60,10 @@ namespace Main {
         void tickGameLogic();
 
         void cullRenderers();
+        void cullAnimations();
         void drawBackgrounds();
         void drawEntities();
+        void drawAnimations();
         void updateFPSText();
         void tickRendering();
 

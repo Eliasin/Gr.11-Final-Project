@@ -28,6 +28,9 @@ namespace IO {
     class PlayerAttackMouseHandler : public MouseHandler {
     protected:
         Game::Map* map;
+        sf::Window* window;
+        std::vector<Rendering::Animation>* animations;
+        std::vector<sf::Texture>* attackAnimation;
         unsigned int framesSinceAttack;
         unsigned int entityID;
         virtual bool entityValid();
@@ -35,7 +38,7 @@ namespace IO {
         virtual void spawnAttackAction(Game::Vector pos);
         virtual void onMouseEvent(sf::Vector2<int> position, sf::Mouse::Button pressed) override;
     public:
-        PlayerAttackMouseHandler(unsigned int entityID_, Game::Map* map_, Rendering::Camera* camera_);
+        PlayerAttackMouseHandler(unsigned int entityID_, Game::Map* map_, Rendering::Camera* camera_, sf::Window* window_, std::vector<Rendering::Animation>* animations_, std::vector<sf::Texture>* attackAnimation_);
         virtual void checkForMouseEvents() override;
     };
 

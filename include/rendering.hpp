@@ -21,16 +21,22 @@ namespace Rendering {
 
     class Animation {
         std::vector<sf::Texture>* animationSet;
+        Camera* camera;
+        sf::Window* window;
         sf::Sprite sprite;
-        Game::Vector position;
+        Game::Rect renderbox;
         unsigned int frameDelay;
         unsigned int currentFrame;
         unsigned int ticksSinceFrameChange;
+        bool done;
 
         void advanceSpriteFrame();
+        void scaleSprite();
+        void updateSprite();
     public:
-        Animation(std::vector<sf::Texture>* animationSet_, Game::Vector position_, unsigned int frameDelay_);
+        Animation(std::vector<sf::Texture>* animationSet_, Camera* camera_, sf::Window* window_, Game::Rect renderbox_, unsigned int frameDelay_);
         void tick();
+        const sf::Sprite& getSprite();
         bool doneAnimating();
     };
 

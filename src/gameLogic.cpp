@@ -22,6 +22,13 @@ namespace Game {
         y = 0;
     }
 
+    Vector rotatePoint(Vector point, Vector anchor, float angle) {
+        Vector rotated;
+        rotated.x = cos(angle*PI/180) * (point.x - anchor.x) - sin(angle*PI/180) * (point.y - anchor.y) + anchor.x;
+        rotated.y = sin(angle*PI/180) * (point.x - anchor.x) + cos(angle*PI/180) * (point.y - anchor.y) + anchor.y;
+        return rotated;
+    }
+
     Circle::Circle() {
         center = Vector(0, 0);
         radius = 0;
@@ -109,7 +116,7 @@ namespace Game {
         stats[STAT::STAM] = 1;
         stats[STAT::SIGHT] = 1;
         stats[STAT::ATK_DELAY] = 15;
-        stats[STAT::RNG] = 75;
+        stats[STAT::RNG] = 150;
         stats[STAT::DMG] = 1;
 
         statModifiers[STAT_MOD::MAX_HP] = 1;

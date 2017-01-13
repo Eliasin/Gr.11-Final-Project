@@ -30,11 +30,14 @@ namespace IO {
         }
     }
 
-    PlayerAttackMouseHandler::PlayerAttackMouseHandler(unsigned int entityID_, Game::Map* map_, Rendering::Camera* camera_) {
+    PlayerAttackMouseHandler::PlayerAttackMouseHandler(unsigned int entityID_, Game::Map* map_, Rendering::Camera* camera_, sf::Window* window_, std::vector<Rendering::Animation>* animations_, std::vector<sf::Texture>* attackAnimation_) {
         entityID = entityID_;
         map = map_;
         camera = camera_;
         framesSinceAttack = 0;
+        animations = animations_;
+        attackAnimation = attackAnimation_;
+        window = window_;
     }
 
     bool PlayerAttackMouseHandler::entityValid() {
@@ -47,6 +50,8 @@ namespace IO {
 
         std::unique_ptr<Game::CircleTargeting> targeting(new Game::CircleTargeting(Game::Circle(pos, entityRange)));
         map->addActionToQueue(std::move(std::unique_ptr<Game::Action>(new Game::HitAction(static_cast<unsigned int>(entityDamage), map, std::move(targeting), &Game::PlayerTeam::PLAYER_TEAM))));
+
+        animations->push_back(Rendering::Animation(attackAnimation, camera, window, Game::Rect(Game::Vector(pos.x + entityRange / 2, pos.y - entityRange / 2), entityRange, entityRange), 10));
     }
 
     void PlayerAttackMouseHandler::onMouseEvent(sf::Vector2<int> position, sf::Mouse::Button pressed) {
@@ -55,24 +60,24 @@ namespace IO {
             framesSinceAttack = 0;
 
             Game::Vector gameClickPosition = camera->reverseTranslate(position);
-            Game::Vector entityPosition = map->getEntityWithID(entityID)->getHitbox().getCenter();
-            std::pair<Game::Vector, Game::Vector> solutions;
+            Game::Rect entityHitbox = map->getEntityWithID(entityID)->getHitbox();
+            Game::Vector entityPosition = Game::Vector(entityHitbox.topLeft.x - entityHitbox.width / 2, entityHitbox.topLeft.y + entityHitbox.height / 2);
             int entityRange = map->getEntityWithID(entityID)->getFinalStats().stats[Game::EntityStats::STAT::RNG];
 
-            float simplifiedLineSlope = (float)(gameClickPosition.x - entityPosition.x) / (float)(gameClickPosition.y - entityPosition.y);
+            std::vector<Game::Vector> attackPoints;
+            Game::Vector startPoint = Game::Vector(entityPosition.x, entityPosition.y - entityRange);
 
-            float simpifiedPositiveSolution = (float)entityRange / sqrt(pow(simplifiedLineSlope, 2) + 1);
-            float simplifiedNegativeSolution = -1 * (float)entityRange / sqrt(pow(simplifiedLineSlope, 2) + 1);
-
-            solutions.first = Game::Vector(simpifiedPositiveSolution + gameClickPosition.x, simpifiedPositiveSolution * simplifiedLineSlope + gameClickPosition.y);
-            solutions.second = Game::Vector(simplifiedNegativeSolution + gameClickPosition.x, simplifiedNegativeSolution * simplifiedLineSlope + gameClickPosition.y);
-
-            if (manhattanDistance(solutions.first, gameClickPosition) >= manhattanDistance(solutions.second, gameClickPosition)) {
-                spawnAttackAction(solutions.first);
+            const unsigned int DIRECTIONS = 8;
+            for (unsigned int i = 0; i <= DIRECTIONS - 1; i++) {
+                attackPoints.push_back(Game::rotatePoint(startPoint, entityPosition, (360/DIRECTIONS*i)));
             }
-            else {
-                spawnAttackAction(solutions.second);
+            Game::Vector closest = startPoint;
+            for (Game::Vector attackPoint : attackPoints) {
+                if (manhattanDistance(attackPoint, gameClickPosition) < manhattanDistance(closest, gameClickPosition)) {
+                    closest = attackPoint;
+                }
             }
+            spawnAttackAction(closest);
         }
     }
 

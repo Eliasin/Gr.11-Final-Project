@@ -9,6 +9,7 @@ namespace Main {
         sf::RenderWindow window;
         textureSets = std::map<std::string, std::map<std::string, std::vector<sf::Texture>>>();
         entityRenderers = std::vector<Rendering::EntityRenderer>();
+        animations = std::vector<Rendering::Animation>();
         backgrounds = std::vector<Rendering::Background>();
         backgroundTextures = std::map<std::string, sf::Texture>();
         camera = Rendering::Camera();
@@ -99,6 +100,25 @@ namespace Main {
         absoluteBackgroundTextures[name] = textureSet;
     }
 
+    void GameInstance::loadAnimationSet(std::string path, std::string name) {
+        std::cout << "Attempting to load " + name + " animation set." << std::endl;
+        std::vector<sf::Texture> textureSet;
+        for (unsigned int i = 0;; i++) {
+            std::string filePath = path + "/" + std::to_string(i) + ".png";
+            std::ifstream file(filePath);
+            if (file) {
+                sf::Texture texture;
+                texture.loadFromFile(filePath);
+                textureSet.push_back(texture);
+                std::cout << "Loaded " << filePath << " successfully." << std::endl;
+            }
+            else {
+                break;
+            }
+        }
+        attackAnimations[name] = textureSet;
+    }
+
     void GameInstance::loadBackgroundTextureFromPath(std::string path, std::string name) {
         sf::Texture texture;
         if (texture.loadFromFile(path)) {
@@ -120,13 +140,14 @@ namespace Main {
         loadBackgroundTextureFromPath("resources/textures/brick.png", "brick");
         loadFontFromPath("resources/fonts/arial.ttf", "arial");
         loadAbsoluteBackgroundTexturesFromPath("resources/textures/starry", "starry");
+        loadAnimationSet("resources/textures/defaultattack", "default");
     }
 
     void GameInstance::initializeIO() {
         std::map<sf::Keyboard::Key, Game::Vector> wasdMovementMap = {{sf::Keyboard::W, Game::Vector(0, -1)}, {sf::Keyboard::A, Game::Vector(-1, 0)}, {sf::Keyboard::S, Game::Vector(0, 1)}, {sf::Keyboard::D, Game::Vector(1, 0)}};
         keyHandlers.push_back(new IO::EntityMovementKeyHandler(wasdMovementMap, &map, 0));
 
-        mouseHandlers.push_back(new IO::PlayerAttackMouseHandler(0, &map, &camera));
+        mouseHandlers.push_back(new IO::PlayerAttackMouseHandler(0, &map, &camera, &window, &animations, &attackAnimations["default"]));
     }
 
     void GameInstance::initializeGameLogic() {
@@ -219,12 +240,32 @@ namespace Main {
         }
     }
 
+    void GameInstance::cullAnimations() {
+        std::vector<std::vector<Rendering::Animation>::iterator> needsErasing;
+        for (std::vector<Rendering::Animation>::iterator animation = animations.begin(); animation != animations.end(); animation++) {
+            if (animation->doneAnimating()) {
+                needsErasing.push_back(animation);
+            }
+        }
+        for (std::vector<Rendering::Animation>::iterator erasing : needsErasing) {
+            animations.erase(erasing);
+        }
+    }
+
+    void GameInstance::drawAnimations() {
+        for (Rendering::Animation& animation : animations) {
+            animation.tick();
+            window.draw(animation.getSprite());
+        }
+    }
+
     void GameInstance::updateFPSText() {
         fpsText.setString(std::to_string(static_cast<int>(std::ceil(getAvgFPS()))));
     }
 
     void GameInstance::tickRendering() {
         cullRenderers();
+        cullAnimations();
         window.clear(sf::Color::White);
 
         camera.centerOn(map.getEntityWithID(0)->getHitbox().getCenter(), window);
@@ -234,6 +275,7 @@ namespace Main {
 
         drawBackgrounds();
         drawEntities();
+        drawAnimations();
         updateFPSText();
         window.draw(fpsText);
 

@@ -53,27 +53,58 @@ namespace Rendering {
         return sf::Vector2<float>(xScale, yScale);
     }
 
-    Animation::Animation(std::vector<sf::Texture>* animationSet_, Game::Vector position_, unsigned int frameDelay_) {
+    Animation::Animation(std::vector<sf::Texture>* animationSet_, Camera* camera_, sf::Window* window_, Game::Rect renderbox_, unsigned int frameDelay_) {
         animationSet = animationSet_;
-        position = position_;
+        renderbox = renderbox_;
         frameDelay = frameDelay_;
+        camera = camera_;
+        window = window_;
+        currentFrame = 0;
+        ticksSinceFrameChange = 0;
+        done = false;
+
+        if (animationSet_) {
+            sprite.setTexture((*animationSet)[0]);
+        }
+        scaleSprite();
+        updateSprite();
     }
 
     void Animation::advanceSpriteFrame() {
         if (currentFrame < animationSet->size() - 1) {
             currentFrame++;
+            updateSprite();
+            scaleSprite();
         }
+        else {
+            done = true;
+        }
+    }
+
+    void Animation::scaleSprite() {
+        sprite.setScale(camera->scaleSpriteToMatcHitbox(sprite, *window, renderbox));
+    }
+
+    void Animation::updateSprite() {
+        sprite.setTexture((*animationSet)[currentFrame]);
+        sprite.setPosition(camera->translate(renderbox.topLeft));
     }
 
     void Animation::tick() {
         ticksSinceFrameChange++;
         if (ticksSinceFrameChange > frameDelay) {
             advanceSpriteFrame();
+            ticksSinceFrameChange = 0;
         }
+        updateSprite();
+    }
+
+    const sf::Sprite& Animation::getSprite() {
+        return sprite;
     }
 
     bool Animation::doneAnimating() {
-        return currentFrame > animationSet->size() - 1;
+        return done;
     }
 
     EntityEventParser::EntityEventParser(Game::Map* map_, unsigned int entityID_) {
