@@ -61,13 +61,13 @@ namespace IO {
 
             Game::Vector gameClickPosition = camera->reverseTranslate(position);
             Game::Rect entityHitbox = map->getEntityWithID(entityID)->getHitbox();
-            Game::Vector entityPosition = Game::Vector(entityHitbox.topLeft.x - entityHitbox.width / 2, entityHitbox.topLeft.y + entityHitbox.height / 2);
+            Game::Vector entityPosition = Game::Vector(entityHitbox.topLeft.x - entityHitbox.width, entityHitbox.topLeft.y + entityHitbox.height / 2);
             int entityRange = map->getEntityWithID(entityID)->getFinalStats().stats[Game::EntityStats::STAT::RNG];
 
             std::vector<Game::Vector> attackPoints;
             Game::Vector startPoint = Game::Vector(entityPosition.x, entityPosition.y - entityRange);
 
-            const unsigned int DIRECTIONS = 8;
+            const unsigned int DIRECTIONS = 16;
             for (unsigned int i = 0; i <= DIRECTIONS - 1; i++) {
                 attackPoints.push_back(Game::rotatePoint(startPoint, entityPosition, (360/DIRECTIONS*i)));
             }
