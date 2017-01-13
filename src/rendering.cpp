@@ -53,6 +53,29 @@ namespace Rendering {
         return sf::Vector2<float>(xScale, yScale);
     }
 
+    Animation::Animation(std::vector<sf::Texture>* animationSet_, Game::Vector position_, unsigned int frameDelay_) {
+        animationSet = animationSet_;
+        position = position_;
+        frameDelay = frameDelay_;
+    }
+
+    void Animation::advanceSpriteFrame() {
+        if (currentFrame < animationSet->size() - 1) {
+            currentFrame++;
+        }
+    }
+
+    void Animation::tick() {
+        ticksSinceFrameChange++;
+        if (ticksSinceFrameChange > frameDelay) {
+            advanceSpriteFrame();
+        }
+    }
+
+    bool Animation::doneAnimating() {
+        return currentFrame > animationSet->size() - 1;
+    }
+
     EntityEventParser::EntityEventParser(Game::Map* map_, unsigned int entityID_) {
         map = map_;
         entityID = entityID_;
@@ -160,7 +183,13 @@ namespace Rendering {
         currentTextureSet = &(*textureSet)[stateToTextureName.find(newState)->second];
         currentlyAnimating = newState;
         currentFrame = 0;
-        ticksSinceFrameChange = 0;
+        if (frameDelay != 0) {
+            ticksSinceFrameChange = frameDelay - 1;
+        }
+        else {
+            ticksSinceFrameChange = frameDelay;
+        }
+
     }
 
     void EntityRenderer::tickCurrentAnim() {

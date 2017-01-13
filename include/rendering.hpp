@@ -19,6 +19,21 @@ namespace Rendering {
         sf::Vector2<float> scaleSpriteToMatcHitbox(const sf::Sprite& sprite, const sf::Window& window, const Game::Rect& hitbox);
     };
 
+    class Animation {
+        std::vector<sf::Texture>* animationSet;
+        sf::Sprite sprite;
+        Game::Vector position;
+        unsigned int frameDelay;
+        unsigned int currentFrame;
+        unsigned int ticksSinceFrameChange;
+
+        void advanceSpriteFrame();
+    public:
+        Animation(std::vector<sf::Texture>* animationSet_, Game::Vector position_, unsigned int frameDelay_);
+        void tick();
+        bool doneAnimating();
+    };
+
     class EntityEventParser {
     public:
         enum class STATE {

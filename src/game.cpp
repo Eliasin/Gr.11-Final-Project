@@ -162,7 +162,7 @@ namespace Main {
         absoluteBackground = Rendering::AbsoluteBackground(&absoluteBackgroundTextures["starry"], &window, 10);
         absoluteBackground.setLooping(true);
 
-        entityRenderers.push_back(Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 1), &camera, &window, &textureSets["dummy"], 30));
+        entityRenderers.push_back(Rendering::EntityRenderer(Rendering::EntityEventParser(&map, 1), &camera, &window, &textureSets["dummy"], 15));
 
     }
 
