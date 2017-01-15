@@ -109,6 +109,10 @@ namespace Game {
         return containsOtherRect || containedByOtherRect;
     }
 
+    bool Rect::operator==(const Rect& rect) const {
+        return topLeft.x == rect.topLeft.x && topLeft.y == rect.topLeft.y && width == rect.width && height == rect.height;
+    }
+
     EntityStats::EntityStats() {
         stats[STAT::MAX_HP] = 50;
         stats[STAT::HP] = 50;
@@ -177,14 +181,117 @@ namespace Game {
         }
     }
 
-    MovementMods::MovementMods() {
-        ghosting = false;
-        noclip = false;
-        flying = false;
+    bool BehaviourProfile::entityValid() const {
+        return map && map->getEntityWithID(entityID);
     }
 
-    BehaviourProfile::BehaviourProfile() {
+    BehaviourProfile::Node::Node(const Game::Rect& area_, unsigned int entityID_) {
+        area = area_;
+        entityID = entityID_;
+    }
 
+    Game::Rect BehaviourProfile::Node::getRect() const {
+        return area;
+    }
+
+    const std::vector<Game::Vector> BehaviourProfile::degreesOfMovement = { Game::Vector(1, 0), Game::Vector(-1, 0), Game::Vector(0, 1), Game::Vector(0, -1), Game::Vector(1, 1), Game::Vector(-1, -1), Game::Vector(1, -1), Game::Vector(-1, 1) };
+
+    bool BehaviourProfile::Node::entityValid() const {
+        return map && map->getEntityWithID(entityID);
+    }
+
+    bool BehaviourProfile::Node::operator==(const Node& node) const {
+        return area == node.getRect();
+    }
+
+    std::vector<BehaviourProfile::Node> BehaviourProfile::Node::getAdjacent() const {
+        std::vector<Node> adjacent;
+        for (Game::Vector movement : degreesOfMovement) {
+            Game::Rect moveRect = Game::Rect(Game::Vector(area.topLeft.x + movement.x, area.topLeft.y + movement.y), area.width, area.height);
+            if (entityValid() && map->entityCanMoveToSpace(entityID, moveRect)) {
+                adjacent.push_back(Node(moveRect, entityID));
+            }
+        }
+        return adjacent;
+    }
+
+    std::queue<BehaviourProfile::Node> BehaviourProfile::reverseQueue(const std::queue<BehaviourProfile::Node>& reversing) {
+        std::vector<Node> tempVec;
+        std::queue<Node> copyQueue = reversing;
+        while (!copyQueue.empty()) {
+            tempVec.push_back(copyQueue.front());
+            copyQueue.pop();
+        }
+        std::reverse(tempVec.begin(), tempVec.end());
+        for (BehaviourProfile::Node node : tempVec) {
+            copyQueue.push(node);
+        }
+        return copyQueue;
+    }
+
+    std::queue<BehaviourProfile::Node> BehaviourProfile::getPath(const Game::Vector& target) {
+        if (!entityValid()) {
+            return std::queue<BehaviourProfile::Node>();
+        }
+        std::queue<Node> path;
+        Node currentNode = Node(map->getEntityWithID(entityID)->getHitbox(), entityID);
+
+        while(true) {
+            if (currentNode.getRect().contains(target)) {
+                return path;
+            }
+            if (!path.empty()) {
+                path.push(currentNode);
+            }
+            if (path.size() > 50) {
+                return std::queue<Node>();
+            }
+
+            Node closestNode = currentNode;
+            for (Node node : currentNode.getAdjacent()) {
+                if (manhattanDistance(node.getRect().topLeft, target) < manhattanDistance(closestNode.getRect().topLeft, target)) {
+                    closestNode = node;
+                }
+            }
+            currentNode = closestNode;
+        }
+
+    }
+
+    void BehaviourProfile::traversePath() {
+        if (entityValid()) {
+            Game::Rect nextSpot = currentPath.front().getRect();
+            Game::Vector movement = Game::Vector(nextSpot.topLeft.x - map->getEntityWithID(entityID)->getHitbox().topLeft.x, nextSpot.topLeft.y - map->getEntityWithID(entityID)->getHitbox().topLeft.y);
+            map->getEntityWithID(entityID)->move(movement);
+            if (map->getEntityWithID(entityID)->getHitbox() == nextSpot) {
+                currentPath.pop();
+            }
+        }
+    }
+
+    void BehaviourProfile::checkIfNeedRepath() {
+        if (ticksSinceRepath < repathDelay) {
+            ticksSinceRepath++;
+        }
+        else if (entityValid()) {
+            ticksSinceRepath = 0;
+            currentPath = getPath(map->getEntityWithID(map->getPlayerID())->getHitbox().getCenter());
+        }
+    }
+
+    void BehaviourProfile::spawnDamageAction() {
+        std::unique_ptr<Targeting> rectTargeting(new RectTargeting(map->getEntityWithID(entityID)->getHitbox()));
+        map->addActionToQueue(std::unique_ptr<HitAction>(new HitAction(map->getEntityWithID(entityID)->getFinalStats().stats[EntityStats::STAT::DMG], map, std::move(rectTargeting), &EnemyTeam::ENEMY_TEAM)));
+    }
+
+    unsigned int GruntBehaviourProfile::getEntityID() {
+        return entityID;
+    }
+
+    void GruntBehaviourProfile::tick() {
+        checkIfNeedRepath();
+        traversePath();
+        spawnDamageAction();
     }
 
     Buff::Buff() {
@@ -594,6 +701,10 @@ namespace Game {
             }
         }
         return moveable;
+    }
+
+    unsigned int Map::getPlayerID() {
+        return 0;
     }
 
 }

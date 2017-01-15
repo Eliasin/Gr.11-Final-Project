@@ -1,8 +1,11 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <queue>
+#include <algorithm>
 #include <cmath>
 #include <map>
+#include <unordered_map>
 #include <memory>
 
 namespace Game {
@@ -31,6 +34,7 @@ namespace Game {
         bool contains(const Rect& rect) const;
         Game::Vector getCenter() const;
         bool intersects(const Rect& rect) const;
+        bool operator==(const Rect& rect) const;
     };
 
     struct Circle {
@@ -73,15 +77,47 @@ namespace Game {
         std::map<STAT_MOD, float> statModifiers;
     };
 
-    struct MovementMods {
-        MovementMods();
-        bool ghosting, noclip, flying;
+    class BehaviourProfile {
+    protected:
+        static const int repathDelay = 10;
+        static const std::vector<Game::Vector> degreesOfMovement;
+
+        class Node {
+            Game::Rect area;
+            unsigned int entityID;
+            Game::Map* map;
+            bool entityValid() const;
+        public:
+            Node(const Game::Rect& area_, unsigned int entityID_);
+            std::vector<Node> getAdjacent() const;
+            Game::Rect getRect() const;
+            bool operator==(const Node& node) const;
+            bool operator<(const Node& node) const;
+        };
+
+        std::queue<Node> currentPath;
+        std::queue<Node> reverseQueue(const std::queue<Node>& reversing);
+        std::queue<Node> getPath(const Game::Vector& target);
+
+        unsigned int ticksSinceRepath;
+        unsigned int entityID;
+        Map* map;
+        virtual void traversePath();
+        virtual void checkIfNeedRepath();
+        virtual void spawnDamageAction();
+    public:
+        virtual unsigned int getEntityID()=0;
+        virtual bool entityValid() const;
+        virtual void tick()=0;
     };
 
-    class BehaviourProfile {
+    class GruntBehaviourProfile : public BehaviourProfile {
+    protected:
+
     public:
-        BehaviourProfile();
-        bool isHitting();
+        GruntBehaviourProfile(unsigned int entityID, Map* map);
+        virtual unsigned int getEntityID() override;
+        virtual void tick() override;
     };
 
     class Buff {
@@ -234,6 +270,7 @@ namespace Game {
         bool spaceEmpty(const Rect& space);
         void setPlayableArea(const Rect& playableArea_);
         bool entityCanMoveToSpace(unsigned int entityID, const Rect& space);
+        unsigned int getPlayerID();
     };
 
     class Entity {
